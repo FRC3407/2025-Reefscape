@@ -74,7 +74,7 @@ public class RobotContainer {
             m_robotDrive));
     //new stuff to make the gyro reset when pressing the "L2" button
     new JoystickButton(m_driverController, Button.kL2.value)
-        .whileTrue(new RunCommand(
+        .onTrue(new RunCommand(
             () -> m_robotDrive.zeroHeading(),
             m_robotDrive));
   }
