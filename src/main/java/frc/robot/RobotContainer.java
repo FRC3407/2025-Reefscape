@@ -68,9 +68,14 @@ public class RobotContainer {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    new JoystickButton(m_driverController, Button.kR1.value)
+    new JoystickButton(m_driverController, Button.kL1.value)
         .whileTrue(new RunCommand(
             () -> m_robotDrive.setX(),
+            m_robotDrive));
+    //new stuff to make the gyro reset when pressing the "L2" button
+    new JoystickButton(m_driverController, Button.kL2.value)
+        .onTrue(new RunCommand(
+            () -> m_robotDrive.zeroHeading(),
             m_robotDrive));
   }
 
