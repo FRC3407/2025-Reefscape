@@ -14,6 +14,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
@@ -37,7 +38,8 @@ public class RobotContainer {
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
-
+  Joystick l_attack3 = new Joystick(0);
+  Joystick r_attack3 = new Joystick(1);
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -51,9 +53,9 @@ public class RobotContainer {
         // Turning is controlled by the X axis of the right stick.
         new RunCommand(
             () -> m_robotDrive.drive(
-                -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband(l_attack3.getY(), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband(l_attack3.getX(), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband(r_attack3.getX(), OIConstants.kDriveDeadband),
                 true),
             m_robotDrive));
   }
@@ -68,13 +70,13 @@ public class RobotContainer {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    new JoystickButton(m_driverController, Button.kL1.value)
+    new JoystickButton(r_attack3, 2)
         .whileTrue(new RunCommand(
             () -> m_robotDrive.setX(),
             m_robotDrive));
     //new stuff to make the gyro reset when pressing the "L2" button
-    new JoystickButton(m_driverController, Button.kL2.value)
-        .onTrue(new RunCommand(
+    new JoystickButton(r_attack3, 7)
+        .whileTrue(new RunCommand(
             () -> m_robotDrive.zeroHeading(),
             m_robotDrive));
   }
