@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import java.io.Serial;
 import java.util.function.DoubleSupplier;
 
 import org.photonvision.targeting.PhotonTrackedTarget;
@@ -33,9 +34,10 @@ public class AprilTagLookCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    System.out.println("im going");
+    System.out.println("Started look command");
     var result = visionSubsystem.camera.getLatestResult();
     if (result.hasTargets()) {
+      System.out.println("I found a target");
       PhotonTrackedTarget target = result.getBestTarget();
       // double yaw = target.get;
       // System.out.println(target.getDetectedCorners());
@@ -52,10 +54,11 @@ public class AprilTagLookCommand extends Command {
         // this.end(false);
         return;
       }
-      driveSubsystem.drive(0, 0, Math.copySign(0.1, yaw), false);
+      driveSubsystem.drive(0, 0, -Math.copySign(0.13, yaw), false);
       // driveSubsystem.drive(0, 0, Math.copySign(0.1, yaw),false,false);
       
     } else {
+      System.out.println("I can't see anything");
       driveSubsystem.drive(0, 0, 0, false);
 
     }
