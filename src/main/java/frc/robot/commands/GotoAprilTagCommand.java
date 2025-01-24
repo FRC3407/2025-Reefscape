@@ -63,9 +63,12 @@ public class GotoAprilTagCommand extends Command {
       if (Math.abs(target.getBestCameraToTarget().getX())<0.1) {
         return true;
       }
+      if (target.getBestCameraToTarget().getY()<0.5) {
+        return true;
+      }
     }
     if (timeSinceAprilTagSeen >= 10) {
-      return true
+      return true;
     }
     return false;
   }
