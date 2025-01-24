@@ -23,7 +23,7 @@ public class VisionSubsystem extends SubsystemBase {
   /** Creates a new VisionSubsystem. */
   public VisionSubsystem() {
     System.out.println("hello im vision");
-    camera = new PhotonCamera("Arducam");
+    camera = new PhotonCamera("Arducam_OV9281_USB_Camera");
 
   }
 
@@ -36,6 +36,8 @@ public class VisionSubsystem extends SubsystemBase {
       // System.out.println("OH MY GOD ITS AN APRILTAG!");
       // System.out.println(result.getTargets());
       PhotonTrackedTarget target = result.getBestTarget();
+
+      
       
     }
 
