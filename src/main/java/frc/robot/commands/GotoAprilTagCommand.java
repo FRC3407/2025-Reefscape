@@ -4,6 +4,10 @@
 
 package frc.robot.commands;
 
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
+
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -12,6 +16,8 @@ import frc.robot.subsystems.VisionSubsystem;
 public class GotoAprilTagCommand extends Command {
   public final VisionSubsystem visionSubsystem;
   public final DriveSubsystem driveSubsystem;
+
+  public float timeSinceAprilTagSeen = 0;
 
   /** Creates a new GotoAprilTag. */
   public GotoAprilTagCommand(VisionSubsystem visionSubsystem, DriveSubsystem driveSubsystem) {
@@ -29,7 +35,20 @@ public class GotoAprilTagCommand extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    PhotonPipelineResult result = visionSubsystem.camera.getLatestResult();
+    if (result.hasTargets()) {
+      timeSinceAprilTagSeen = 0;
+      System.out.println("I found a target");
+      PhotonTrackedTarget target = result.getBestTarget();
+      Transform3d camToTarget = target.getBestCameraToTarget();
+      double speed = 0.001; // TODO: make this a constant later
+      driveSubsystem.drive(speed*camToTarget.getX(), speed*camToTarget.getY(), 0, false);
+
+    } else {
+      timeSinceAprilTagSeen += 1/50;
+    }
+  }
 
   // Called once the command ends or is interrupted.
   @Override
@@ -38,6 +57,16 @@ public class GotoAprilTagCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    PhotonPipelineResult result = visionSubsystem.camera.getLatestResult();
+    if (result.hasTargets()) {
+      PhotonTrackedTarget target = result.getBestTarget();
+      if (Math.abs(target.getBestCameraToTarget().getX())<0.1) {
+        return true;
+      }
+    }
+    if (timeSinceAprilTagSeen >= 10) {
+      return true
+    }
     return false;
   }
 }
