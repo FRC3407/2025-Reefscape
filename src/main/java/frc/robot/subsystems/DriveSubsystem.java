@@ -48,9 +48,10 @@ public class DriveSubsystem extends SubsystemBase {
       DriveConstants.kRearRightTurningCanId,
       DriveConstants.kBackRightChassisAngularOffset);
 
-  // The gyro sensor
+  // The gyro sensor and the ultrasonic sensor.
   private final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);
   private final AnalogInput m_ultrasonic = new AnalogInput(0);
+
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
       DriveConstants.kDriveKinematics,
