@@ -67,11 +67,18 @@ public class DriveSubsystem extends SubsystemBase {
           m_rearRight.getPosition()
       });
   //config variable for pathplanner
-  RobotConfig config; 
+  RobotConfig config;
+  
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
     // Usage reporting for MAXSwerve template
     HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_MaxSwerve);
+    try{
+      config = RobotConfig.fromGUISettings();
+    } catch (Exception e) {
+      // Handle exception as needed
+      e.printStackTrace();
+    } 
     AutoBuilder.configure( 
       this::getPose,
       this::resetOdometry,
