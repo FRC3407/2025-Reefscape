@@ -39,20 +39,23 @@ public class GotoAprilTagCommand extends Command {
     PhotonPipelineResult result = visionSubsystem.camera.getLatestResult();
     if (result.hasTargets()) {
       timeSinceAprilTagSeen = 0;
-      System.out.println("I found a target");
       PhotonTrackedTarget target = result.getBestTarget();
       Transform3d camToTarget = target.getBestCameraToTarget();
-      double speed = 0.001; // TODO: make this a constant later
+      System.out.println("I found a target " + target.getBestCameraToTarget());
+      // System.out.println("I found a target " + camToTarget.getX() + " " + camToTarget.getY());
+      double speed = 0.05; // TODO: make this a constant later
       driveSubsystem.drive(speed*camToTarget.getX(), speed*camToTarget.getY(), 0, false);
 
     } else {
-      timeSinceAprilTagSeen += 1/50;
+      timeSinceAprilTagSeen += 0.02;
     }
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    System.out.println("goto april tag ended");
+  }
 
   // Returns true when the command should end.
   @Override
@@ -60,14 +63,14 @@ public class GotoAprilTagCommand extends Command {
     PhotonPipelineResult result = visionSubsystem.camera.getLatestResult();
     if (result.hasTargets()) {
       PhotonTrackedTarget target = result.getBestTarget();
-      if (Math.abs(target.getBestCameraToTarget().getX())<0.1) {
-        return true;
-      }
-      if (target.getBestCameraToTarget().getY()<0.5) {
+      // if (Math.abs(target.getBestCameraToTarget().getX())<0.1) {
+      //   return true;
+      // }
+      if (target.getBestCameraToTarget().getX()<0.5) {
         return true;
       }
     }
-    if (timeSinceAprilTagSeen >= 10) {
+    if (timeSinceAprilTagSeen >= 5.0) {
       return true;
     }
     return false;
