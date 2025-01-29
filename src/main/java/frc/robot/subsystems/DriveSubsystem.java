@@ -242,6 +242,6 @@ public class DriveSubsystem extends SubsystemBase {
    */
 
   public void driveRobotRelative(ChassisSpeeds speeds, DriveFeedforwards feedforwards){//not using feed forwards 
-    this.drive(speeds.vxMetersPerSecond/Constants.DriveConstants.kMaxSpeedMetersPerSecond, speeds.vyMetersPerSecond/Constants.DriveConstants.kMaxSpeedMetersPerSecond, speeds.omegaRadiansPerSecond,false);
+    this.drive(speeds.vxMetersPerSecond/Constants.DriveConstants.kMaxSpeedMetersPerSecond, speeds.vyMetersPerSecond/Constants.DriveConstants.kMaxSpeedMetersPerSecond, speeds.omegaRadiansPerSecond/Constants.DriveConstants.kMaxAngularSpeed, false);
   }
 }
