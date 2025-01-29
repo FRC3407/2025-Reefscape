@@ -19,7 +19,7 @@ public class DriveForwardUltrasonicCommand extends Command {
 
   public DriveForwardUltrasonicCommand(DriveSubsystem driveSubsystem) {
     m_DriveSubsystem = driveSubsystem;
-    pidController = new PIDController(0.05, 0, 0);
+    pidController = new PIDController(0.16, 0, 0);
     timer = new Timer();
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(driveSubsystem);
@@ -29,7 +29,8 @@ public class DriveForwardUltrasonicCommand extends Command {
   @Override
   public void initialize() {
     timer.reset();
-    timer.start();}
+    timer.start();
+    }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
