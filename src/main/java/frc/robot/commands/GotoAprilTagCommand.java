@@ -41,10 +41,22 @@ public class GotoAprilTagCommand extends Command {
       timeSinceAprilTagSeen = 0;
       PhotonTrackedTarget target = result.getBestTarget();
       Transform3d camToTarget = target.getBestCameraToTarget();
-      System.out.println("I found a target " + target.getBestCameraToTarget());
+      // System.out.println("I found a target " + camToTarget.getRotation().toString());
       // System.out.println("I found a target " + camToTarget.getX() + " " + camToTarget.getY());
-      double speed = 0.05; // TODO: make this a constant later
-      driveSubsystem.drive(speed*camToTarget.getX(), speed*camToTarget.getY(), 0, false);
+      double yaw = camToTarget.getRotation().getZ();
+      System.out.println("Yaw: "+yaw);
+      double towardsTagSpeed = 0.05; // TODO: make this a constant later
+      double tangentTagSpeed = 0.08;
+      double rotationSpeed = 0.02;
+
+      double movementX = towardsTagSpeed * camToTarget.getX();
+      double movementY = towardsTagSpeed * camToTarget.getY();
+
+      // movementX -= tangentTagSpeed * Math.sin(yaw);
+
+      // System.out.println("I should move "+Math.cos(yaw));
+
+      driveSubsystem.drive(movementX, movementY, -rotationSpeed*yaw, false);
 
     } else {
       timeSinceAprilTagSeen += 0.02;
@@ -66,7 +78,7 @@ public class GotoAprilTagCommand extends Command {
       // if (Math.abs(target.getBestCameraToTarget().getX())<0.1) {
       //   return true;
       // }
-      if (target.getBestCameraToTarget().getX()<0.5) {
+      if (target.getBestCameraToTarget().getX()<1.0) {
         return true;
       }
     }
