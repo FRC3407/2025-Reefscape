@@ -45,20 +45,28 @@ public class GotoAprilTagCommand extends Command {
       // System.out.println("I found a target " + camToTarget.getX() + " " + camToTarget.getY());
       double yaw = camToTarget.getRotation().getZ();
       System.out.println("Yaw: "+yaw);
-      double towardsTagSpeed = 0.05; // TODO: make this a constant later
+      double towardsTagSpeed = 0.1; // TODO: make this a constant later
       double tangentTagSpeed = 0.08;
-      double rotationSpeed = 0.02;
+      double rotationSpeed = 0.3                                                                                      ;
 
       double movementX = towardsTagSpeed * camToTarget.getX();
       double movementY = towardsTagSpeed * camToTarget.getY();
+      
+      double newYaw = Math.copySign(Math.PI-Math.abs(yaw), yaw);
 
       // movementX -= tangentTagSpeed * Math.sin(yaw);
 
       // System.out.println("I should move "+Math.cos(yaw));
 
-      driveSubsystem.drive(movementX, movementY, -rotationSpeed*yaw, false);
+      if (target.getBestCameraToTarget().getX()<1.0) {
+        movementX = 0;
+        movementY *= 3.0;
+      }
+
+      driveSubsystem.drive(movementX, movementY, -rotationSpeed*newYaw, false);
 
     } else {
+      driveSubsystem.drive(0, 0, 0, false);
       timeSinceAprilTagSeen += 0.02;
     }
   }
@@ -66,7 +74,7 @@ public class GotoAprilTagCommand extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    System.out.println("goto april tag ended");
+    System.out.println("goto april tag ended. int: " + interrupted);
   }
 
   // Returns true when the command should end.
@@ -75,14 +83,26 @@ public class GotoAprilTagCommand extends Command {
     PhotonPipelineResult result = visionSubsystem.camera.getLatestResult();
     if (result.hasTargets()) {
       PhotonTrackedTarget target = result.getBestTarget();
+      Transform3d camToTarget = target.getBestCameraToTarget();
+
+      double yaw = camToTarget.getRotation().getZ();
+
+      double newYaw = Math.copySign(Math.PI-Math.abs(yaw), yaw);
       // if (Math.abs(target.getBestCameraToTarget().getX())<0.1) {
       //   return true;
       // }
-      if (target.getBestCameraToTarget().getX()<1.0) {
+      System.out.println(Math.abs(target.getBestCameraToTarget().getY()));
+      if (
+        camToTarget.getX()<0.8 &&
+        Math.abs(camToTarget.getY())<0.05 &&
+        Math.abs(newYaw)<0.1
+      ) {
+        System.out.println("I did it :)");
         return true;
       }
     }
     if (timeSinceAprilTagSeen >= 5.0) {
+      System.out.println("I can't find it :(");
       return true;
     }
     return false;
