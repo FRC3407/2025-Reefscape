@@ -190,4 +190,11 @@ public class DriveSubsystem extends SubsystemBase {
   public double getTurnRate() {
     return m_gyro.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
   }
+
+  public boolean isConnected() {
+    return m_gyro.isConnected();
+  }
+  public boolean isCalibrating() {
+    return m_gyro.isCalibrating();
+  }
 }
