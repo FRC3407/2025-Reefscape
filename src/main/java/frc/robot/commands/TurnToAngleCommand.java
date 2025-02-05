@@ -12,27 +12,26 @@ public class TurnToAngleCommand extends Command {
   /** Creates a new TurnToAngleCommand. */
   private final DriveSubsystem m_DriveSubsystem;
   private final Double m_TargetAngle;
+  private double goalAngle;
   public TurnToAngleCommand(DriveSubsystem driveSubsystem, double targetAngle) {
     m_DriveSubsystem = driveSubsystem;
-    m_TargetAngle = targetAngle + m_DriveSubsystem.getHeading();
+    m_TargetAngle = targetAngle;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(driveSubsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    goalAngle = m_DriveSubsystem.getHeading() + m_TargetAngle;
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double angleDifference = m_TargetAngle - m_DriveSubsystem.getHeading();
-    if (angleDifference == 45.0){
-      m_DriveSubsystem.drive(0, 0,0.1, false);
-    }
-    else{
-      m_DriveSubsystem.drive(0, 0, -(0.01 * angleDifference), false);
-    }
+    double angleDifference = goalAngle - m_DriveSubsystem.getHeading();
+    m_DriveSubsystem.drive(0, 0, -(0.01 * angleDifference), false);
+    
   }
 
   // Called once the command ends or is interrupted.
@@ -44,7 +43,7 @@ public class TurnToAngleCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    double angleDifference = m_TargetAngle - m_DriveSubsystem.getHeading();
+    double angleDifference = goalAngle - m_DriveSubsystem.getHeading();
     System.out.println(m_DriveSubsystem.isConnected() + "  " + m_DriveSubsystem.isCalibrating() + "  " + Math.round(angleDifference*100.)/100. + "  " + m_DriveSubsystem.getTurnRate());
     return Math.abs(angleDifference) < 2;
   }
