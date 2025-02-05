@@ -17,6 +17,12 @@ public class GotoAprilTagCommand extends Command {
   public final VisionSubsystem visionSubsystem;
   public final DriveSubsystem driveSubsystem;
 
+  public static double closeEnoughDistance = 0.2;
+  public static double towardsTagSpeed = 0.1; // TODO: make this a constant later
+
+  public Transform3d lastTargetTransform;
+  public boolean useLastTransform = false;
+  
   public float timeSinceAprilTagSeen = 0;
 
   /** Creates a new GotoAprilTag. */
@@ -45,7 +51,6 @@ public class GotoAprilTagCommand extends Command {
       // System.out.println("I found a target " + camToTarget.getX() + " " + camToTarget.getY());
       double yaw = camToTarget.getRotation().getZ();
       System.out.println("Yaw: "+yaw);
-      double towardsTagSpeed = 0.1; // TODO: make this a constant later
       double tangentTagSpeed = 0.08;
       double rotationSpeed = 0.3                                                                                      ;
 
@@ -58,15 +63,21 @@ public class GotoAprilTagCommand extends Command {
 
       // System.out.println("I should move "+Math.cos(yaw));
 
-      if (target.getBestCameraToTarget().getX()<1.0) {
+      if (target.getBestCameraToTarget().getX()<closeEnoughDistance) {
         movementX = 0;
         movementY *= 3.0;
       }
 
       driveSubsystem.drive(movementX, movementY, -rotationSpeed*newYaw, false);
-
+      lastTargetTransform = camToTarget;
+      useLastTransform = true;
     } else {
-      driveSubsystem.drive(0, 0, 0, false);
+      if (useLastTransform) {
+        double movementY = towardsTagSpeed * lastTargetTransform.getY();
+        driveSubsystem.drive(0, movementY, 0, false);
+      } else {
+        driveSubsystem.drive(0, 0, 0, false);
+      }
       timeSinceAprilTagSeen += 0.02;
     }
   }
@@ -74,6 +85,7 @@ public class GotoAprilTagCommand extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    driveSubsystem.drive(0, 0, 0, false);
     System.out.println("goto april tag ended. int: " + interrupted);
   }
 
@@ -93,7 +105,7 @@ public class GotoAprilTagCommand extends Command {
       // }
       System.out.println(Math.abs(target.getBestCameraToTarget().getY()));
       if (
-        camToTarget.getX()<0.8 &&
+        camToTarget.getX()<closeEnoughDistance &&
         Math.abs(camToTarget.getY())<0.05 &&
         Math.abs(newYaw)<0.1
       ) {
