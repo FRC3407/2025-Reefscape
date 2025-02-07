@@ -19,13 +19,14 @@ public class CoralElevator extends SubsystemBase {
  private final SparkMax m_elevator = new SparkMax(ElevatorCanId, MotorType.kBrushless) ; // object variables 
  private final RelativeEncoder m_encoder = m_elevator.getEncoder(); // get the encoder value from motor
  private final PIDController m_control = new PIDController(P_value, I_value, D_value); // gets the pid values from the constants subsystem
-
+ private double set_point;
   /** Creates a new CoralElevator. */
   public CoralElevator() {
     m_encoder.setPosition(0); // sets the value of encoder as 0
   }
   private void set_position(double height){
-    m_elevator.set(m_control.calculate(m_encoder.getPosition(), height));   
+    set_point = height;
+    
   }
   public void stop(){
     m_elevator.set(0);
@@ -49,5 +50,6 @@ public class CoralElevator extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    m_elevator.set(m_control.calculate(m_encoder.getPosition(), set_point));// called 50 times a second
   }
 }
