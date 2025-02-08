@@ -47,13 +47,13 @@ public class MoveToWallCommand extends Command
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(m_distOnboard.getRange()*2.54/100<=0.5)
+    if(m_distOnboard.getRange()*2.54/100<=0.7)
   {
-    return false;
+    return true;
   }
   else
   {
-    return true;
+    return false;
   }
   }
 } 

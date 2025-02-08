@@ -48,7 +48,9 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-  }
+    SmartDashboard.putNumber("Range Onboard", distOnboard.getRange()*2.54/100);
+    SmartDashboard.putBoolean("Range Valid", distOnboard.isRangeValid());
+  } 
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
@@ -94,11 +96,9 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    if(distOnboard.isRangeValid()) {
-      SmartDashboard.putNumber("Range Onboard", distOnboard.getRange()*2.54/100);
-      SmartDashboard.putNumber("Timestamp Onboard", distOnboard.getTimestamp());
+    
     } 
-  }
+  
 
   @Override
   public void testInit() {
