@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
@@ -18,6 +19,7 @@ public class CoralElevator extends SubsystemBase {
   
  private final SparkMax m_elevator = new SparkMax(ElevatorCanId, MotorType.kBrushless) ; // object variables 
  private final RelativeEncoder m_encoder = m_elevator.getEncoder(); // get the encoder value from motor
+ private final SparkLimitSwitch m_switch1 = m_elevator.getForwardLimitSwitch();
  private final PIDController m_control = new PIDController(P_value, I_value, D_value); // gets the pid values from the constants subsystem
  private double set_point;
   /** Creates a new CoralElevator. */
@@ -29,7 +31,7 @@ public class CoralElevator extends SubsystemBase {
     
   }
   public void stop(){
-    m_elevator.set(0);
+    set_point = m_encoder.getPosition();
   }
   public void L1() { 
     set_position(level_1);
@@ -51,5 +53,6 @@ public class CoralElevator extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     m_elevator.set(m_control.calculate(m_encoder.getPosition(), set_point));// called 50 times a second
+    
   }
 }
