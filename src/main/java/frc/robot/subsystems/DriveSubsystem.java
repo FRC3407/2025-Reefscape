@@ -9,6 +9,8 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.DriveFeedforwards;
+import com.revrobotics.Rev2mDistanceSensor;
+import com.revrobotics.Rev2mDistanceSensor.Port;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
@@ -55,6 +57,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   // The gyro sensor
   private final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);
+  //2m distance sensor
+  private Rev2mDistanceSensor distOnboard = new Rev2mDistanceSensor(Port.kOnboard);
 
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
@@ -114,9 +118,15 @@ public class DriveSubsystem extends SubsystemBase {
         });
 
     SmartDashboard.putNumber("Gyro Angle", getHeading());
+    SmartDashboard.putNumber("Range Onboard", distOnboard.getRange()*2.54/100);
+    SmartDashboard.putBoolean("Range Valid", distOnboard.isRangeValid());
 
   }
 
+
+  public double getRange(){
+  return distOnboard.getRange()*2.54/100;
+  }
   /**
    * Returns the currently-estimated pose of the robot.
    *
