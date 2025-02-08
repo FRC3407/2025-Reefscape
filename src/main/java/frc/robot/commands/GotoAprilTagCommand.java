@@ -17,7 +17,9 @@ public class GotoAprilTagCommand extends Command {
   public final VisionSubsystem visionSubsystem;
   public final DriveSubsystem driveSubsystem;
 
-  public static double closeEnoughDistance = 0.2;
+  public static double closeEnoughXDistance = 0.2;
+  public static double closeEnoughYDistance = 0.05;
+  public static double closeEnoughRotation = 0.1; // about 5.7 degrees
   public static double towardsTagSpeed = 0.1; // TODO: make this a constant later
 
   public Transform3d lastTargetTransform;
@@ -63,7 +65,7 @@ public class GotoAprilTagCommand extends Command {
 
       // System.out.println("I should move "+Math.cos(yaw));
 
-      if (target.getBestCameraToTarget().getX()<closeEnoughDistance) {
+      if (target.getBestCameraToTarget().getX()<closeEnoughXDistance) {
         movementX = 0;
         movementY *= 3.0;
       }
@@ -72,12 +74,7 @@ public class GotoAprilTagCommand extends Command {
       lastTargetTransform = camToTarget;
       useLastTransform = true;
     } else {
-      if (useLastTransform) {
-        double movementY = towardsTagSpeed * lastTargetTransform.getY();
-        driveSubsystem.drive(0, movementY, 0, false);
-      } else {
-        driveSubsystem.drive(0, 0, 0, false);
-      }
+      driveSubsystem.drive(0, 0, 0, false);
       timeSinceAprilTagSeen += 0.02;
     }
   }
@@ -100,20 +97,17 @@ public class GotoAprilTagCommand extends Command {
       double yaw = camToTarget.getRotation().getZ();
 
       double newYaw = Math.copySign(Math.PI-Math.abs(yaw), yaw);
-      // if (Math.abs(target.getBestCameraToTarget().getX())<0.1) {
-      //   return true;
-      // }
       System.out.println(Math.abs(target.getBestCameraToTarget().getY()));
       if (
-        camToTarget.getX()<closeEnoughDistance &&
-        Math.abs(camToTarget.getY())<0.05 &&
-        Math.abs(newYaw)<0.1
+        camToTarget.getX()<closeEnoughXDistance &&
+        Math.abs(camToTarget.getY())<closeEnoughYDistance &&
+        Math.abs(newYaw)<closeEnoughRotation
       ) {
         System.out.println("I did it :)");
         return true;
       }
     }
-    if (timeSinceAprilTagSeen >= 5.0) {
+    if (timeSinceAprilTagSeen >= 1.0) {
       System.out.println("I can't find it :(");
       return true;
     }

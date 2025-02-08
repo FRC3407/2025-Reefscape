@@ -8,7 +8,10 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -20,10 +23,9 @@ public class DriveDistanceCommand extends Command {
   // In meters
   public static double closeEnoughDistance = 0.1;
 
-  public double x;
-  public double y;
   public double speed;
   public Pose2d startingPose;
+  public Pose2d targetPose;
 
   /**
    * Creates a new DriveDistanceCommand
@@ -34,10 +36,13 @@ public class DriveDistanceCommand extends Command {
   public DriveDistanceCommand(DriveSubsystem driveSubsystem, double x, double y, double speed) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.driveSubsystem=driveSubsystem;
-    this.x=x;
-    this.y=y;
     this.speed=speed;
     this.startingPose = driveSubsystem.getPose();
+    Transform2d offset = new Transform2d(
+      new Translation2d(x,y),
+      Rotation2d.fromDegrees(0)
+    );
+    this.targetPose = this.startingPose.plus(offset);
     addRequirements(driveSubsystem);
   }
 
@@ -51,15 +56,16 @@ public class DriveDistanceCommand extends Command {
   @Override
   public void execute() {
     Pose2d currentPose = driveSubsystem.getPose();
-    Pose2d relativePose = currentPose.relativeTo(startingPose);
-    if (Math.sqrt(relativePose.getX()*relativePose.getX() + relativePose.getY()*relativePose.getY())>closeEnoughDistance) {
-        driveSubsystem.drive(
-            Math.copySign(speed, x),
-            Math.copySign(speed, y),
-            0,
-            false
-        );
-    }
+    Pose2d relativePose = currentPose.relativeTo(targetPose);
+    double distance = Math.sqrt(Math.pow(relativePose.getX(),2) + Math.pow(relativePose.getY(),2));
+
+    driveSubsystem.drive(
+        relativePose.getX()/distance*speed,
+        relativePose.getY()/distance*speed,
+        0,
+        false
+    );
+
     //loser loser hahahahahaha wheee ooga booga hghjhygfghjkhgfghjhgfdfghjuytrerfghjkiuytrertyuiku sorry i needded to do this
   }
 
@@ -72,6 +78,9 @@ public class DriveDistanceCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    Pose2d currentPose = driveSubsystem.getPose();
+    Pose2d relativePose = currentPose.relativeTo(targetPose);
+    double distance = Math.sqrt(Math.pow(relativePose.getX(),2) + Math.pow(relativePose.getY(),2));
+    return distance < closeEnoughDistance;
   }
 }
