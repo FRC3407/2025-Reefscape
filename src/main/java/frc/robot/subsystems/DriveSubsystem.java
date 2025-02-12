@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.Rev2mDistanceSensor;
+import com.revrobotics.Rev2mDistanceSensor.Port;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
@@ -48,6 +50,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   // The gyro sensor
   private final AHRS m_gyro = new AHRS(NavXComType.kUSB1);
+  private Rev2mDistanceSensor distMXP;
 
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
@@ -64,6 +67,8 @@ public class DriveSubsystem extends SubsystemBase {
   public DriveSubsystem() {
     // Usage reporting for MAXSwerve template
     HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_MaxSwerve);
+    distMXP = new Rev2mDistanceSensor(Port.kMXP);
+    distMXP.setAutomaticMode(true);
   }
 
   @Override
@@ -79,6 +84,8 @@ public class DriveSubsystem extends SubsystemBase {
         });
 
     SmartDashboard.putNumber("Gyro Angle", getHeading());
+    SmartDashboard.putNumber("Range MXP", distMXP.getRange());
+    SmartDashboard.putBoolean("is valid", distMXP.isRangeValid());
 
   }
 
@@ -196,5 +203,9 @@ public class DriveSubsystem extends SubsystemBase {
   }
   public boolean isCalibrating() {
     return m_gyro.isCalibrating();
+  }
+
+  public double getDistance() {
+    return  distMXP.GetRange();
   }
 }
