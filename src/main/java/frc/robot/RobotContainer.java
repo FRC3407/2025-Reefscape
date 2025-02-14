@@ -21,10 +21,12 @@ import edu.wpi.first.wpilibj.PS4Controller.Button;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.TurnToAngleCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import java.util.List;
 
@@ -41,7 +43,7 @@ public class RobotContainer {
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
   // The driver's controller
-  XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
+  CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
   Joystick l_attack3 = new Joystick(0);
   Joystick r_attack3 = new Joystick(1);
   //pathplanner sendable chooser for auto widget i think
@@ -84,6 +86,8 @@ public class RobotContainer {
         .whileTrue(new RunCommand(
             () -> m_robotDrive.setX(),
             m_robotDrive));
+    m_driverController.x().onTrue(new TurnToAngleCommand(m_robotDrive, -45));
+    m_driverController.a().onTrue(new TurnToAngleCommand(m_robotDrive, 45));
     //new stuff to make the gyro reset when pressing the "L2" button
     new JoystickButton(r_attack3, 7)
         .whileTrue(new RunCommand(
