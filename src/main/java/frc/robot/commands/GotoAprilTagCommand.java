@@ -17,7 +17,7 @@ public class GotoAprilTagCommand extends Command {
   public final VisionSubsystem visionSubsystem;
   public final DriveSubsystem driveSubsystem;
 
-  public static double closeEnoughXDistance = 0.2;
+  public static double closeEnoughXDistance = 0.35;
   public static double closeEnoughYDistance = 0.05;
   public static double closeEnoughRotation = 0.1; // about 5.7 degrees
   public static double towardsTagSpeed = 0.1; // TODO: make this a constant later
@@ -54,7 +54,7 @@ public class GotoAprilTagCommand extends Command {
       double yaw = camToTarget.getRotation().getZ();
       System.out.println("Yaw: "+yaw);
       double tangentTagSpeed = 0.08;
-      double rotationSpeed = 0.3                                                                                      ;
+      double rotationSpeed = 0.3;
 
       double movementX = towardsTagSpeed * camToTarget.getX();
       double movementY = towardsTagSpeed * camToTarget.getY();
@@ -70,7 +70,7 @@ public class GotoAprilTagCommand extends Command {
         movementY *= 3.0;
       }
 
-      driveSubsystem.drive(movementX, movementY, -rotationSpeed*newYaw, false);
+      driveSubsystem.drive(movementX, movementY, -rotationSpeed*newYaw/Math.max(0.5,camToTarget.getX()*4.0), false);
       lastTargetTransform = camToTarget;
       useLastTransform = true;
     } else {
