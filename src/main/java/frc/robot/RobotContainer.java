@@ -118,19 +118,19 @@ public class RobotContainer {
         .whileTrue(new RunCommand(
             () -> m_elevatorShift.coral_station(),
             m_elevatorShift));
-        new JoystickButton(r_attack3, 6)
+        new JoystickButton(r_attack3, 5)
         .whileTrue(new RunCommand(
             () -> m_elevatorShift.coral_station(),
             m_elevatorShift));
-            new JoystickButton(r_attack3, 6)
+            new JoystickButton(r_attack3, 4)
         .whileTrue(new RunCommand(
             () -> m_elevatorShift.coral_station(),
             m_elevatorShift));
-            new JoystickButton(r_attack3, 6)
+            new JoystickButton(r_attack3, 3)
         .whileTrue(new RunCommand(
             () -> m_elevatorShift.coral_station(),
             m_elevatorShift));
-            new JoystickButton(r_attack3, 6)
+            new JoystickButton(r_attack3, 2)
         .whileTrue(new RunCommand(
             () -> m_elevatorShift.coral_station(),
             m_elevatorShift));
