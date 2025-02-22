@@ -90,10 +90,12 @@ public class RobotContainer {
         .whileTrue(new RunCommand(
             () -> m_robotDrive.setX(),
             m_robotDrive));
-    /*m_driverController.x().onTrue(new TurnToAngleCommand(m_robotDrive, -45));
-    m_driverController.a().onTrue(new TurnToAngleCommand(m_robotDrive, 45));*/
-    m_driverController.povDown().onTrue(new InstantCommand(m_Corallator::angleDown));
-    m_driverController.povUp().onTrue(new InstantCommand(m_Corallator::angleUp));
+    
+    m_driverController.y().onTrue(new InstantCommand(m_Corallator::angleDown));
+    m_driverController.a().onTrue(new InstantCommand(m_Corallator::angleUp));
+
+    m_driverController.leftBumper().onTrue(new InstantCommand(m_Corallator::outtakeCoral));
+    m_driverController.rightBumper().onTrue(new InstantCommand(m_Corallator::intakeCoral));
 
     // intake and outtake
     JoystickButton unbing = new JoystickButton(r_attack3, 1);
@@ -103,7 +105,7 @@ public class RobotContainer {
     bing.onTrue(new InstantCommand(m_Corallator::intakeCoral));
 
     // upa nd down
-    JoystickButton coralatorupper = new JoystickButton(l_attack3, 3);
+    JoystickButton coralatorupper = new JoystickButton(l_attack3, 1);
     coralatorupper.onTrue(new InstantCommand(m_Corallator::angleUp));
 
     JoystickButton coralatordowner = new JoystickButton(l_attack3, 2);
@@ -114,7 +116,7 @@ public class RobotContainer {
         .whileTrue(new RunCommand(
             () -> m_robotDrive.zeroHeading(),
             m_robotDrive));
-    new JoystickButton(r_attack3, 6)
+    new JoystickButton(r_attack3, 4)
         .onTrue(new InstantCommand(
             () -> m_elevatorShift.coral_station(),
             m_elevatorShift));
@@ -122,11 +124,11 @@ public class RobotContainer {
         .onTrue(new InstantCommand(
             () -> m_elevatorShift.L1(),
             m_elevatorShift));
-            new JoystickButton(r_attack3, 4)
+            new JoystickButton(l_attack3, 4)
         .onTrue(new InstantCommand(
             () -> m_elevatorShift.L2(),
             m_elevatorShift));
-            new JoystickButton(r_attack3, 3)
+            new JoystickButton(l_attack3, 5)
         .onTrue(new InstantCommand(
             () -> m_elevatorShift.L3(),
             m_elevatorShift));

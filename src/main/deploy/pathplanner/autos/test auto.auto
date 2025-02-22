@@ -7,13 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "start to coral"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": null
+            "pathName": "New Path"
           }
         }
       ]
