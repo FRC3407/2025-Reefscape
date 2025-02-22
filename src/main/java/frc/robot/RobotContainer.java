@@ -43,6 +43,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 public class RobotContainer {
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  private final CoralElevator m_elevatorShift = new CoralElevator();
   private final CorallatorSubsystem m_Corallator = new CorallatorSubsystem();
   private final CoralElevator m_elevatorShift = new CoralElevator();
   // The driver's controller
