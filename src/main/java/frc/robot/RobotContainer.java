@@ -24,12 +24,13 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.commands.TurnToAngleCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import java.util.List;
-
+import frc.robot.subsystems.CorallatorSubsystem;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 /*
@@ -41,6 +42,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 public class RobotContainer {
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  private final CorallatorSubsystem m_Corallator = new CorallatorSubsystem();
 
   // The driver's controller
   CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
@@ -86,8 +88,13 @@ public class RobotContainer {
         .whileTrue(new RunCommand(
             () -> m_robotDrive.setX(),
             m_robotDrive));
-    m_driverController.x().onTrue(new TurnToAngleCommand(m_robotDrive, -45));
-    m_driverController.a().onTrue(new TurnToAngleCommand(m_robotDrive, 45));
+    /*m_driverController.x().onTrue(new TurnToAngleCommand(m_robotDrive, -45));
+    m_driverController.a().onTrue(new TurnToAngleCommand(m_robotDrive, 45));*/
+    m_driverController.leftBumper().onTrue(new InstantCommand(m_Corallator::intakeCoral));
+    m_driverController.rightBumper().onTrue(new InstantCommand(m_Corallator::outtakeCoral));
+    m_driverController.povDown().onTrue(new InstantCommand(m_Corallator::angleDown));
+    m_driverController.povUp().onTrue(new InstantCommand(m_Corallator::angleUp));
+
     //new stuff to make the gyro reset when pressing the "L2" button
     new JoystickButton(r_attack3, 7)
         .whileTrue(new RunCommand(

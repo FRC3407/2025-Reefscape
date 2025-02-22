@@ -18,7 +18,7 @@ public class CorallatorSubsystem extends SubsystemBase{
     private final double targetAngleUpDegrees = 45;
     private final double targetAngleDownDegrees = -45;
     private double set_point;
-    public double flingerSpeed = 0.5; 
+    public double flingerSpeed = 0.05; 
      
     public CorallatorSubsystem(){
         
