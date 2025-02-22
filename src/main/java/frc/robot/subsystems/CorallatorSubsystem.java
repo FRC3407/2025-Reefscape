@@ -11,9 +11,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class CorallatorSubsystem extends SubsystemBase{
-    private SparkMax m_wrist = new SparkMax(0, MotorType.kBrushless);
+    private SparkMax m_wrist = new SparkMax(12, MotorType.kBrushless);
     private RelativeEncoder m_wristEncoder = m_wrist.getEncoder();
-    private SparkFlex m_flinger = new SparkFlex(0, null);
+    private SparkFlex m_flinger = new SparkFlex(13, null);
     private final PIDController m_pidController = new PIDController(1, 0, 0);
     private final double targetAngleUpDegrees = 45;
     private final double targetAngleDownDegrees = -45;
