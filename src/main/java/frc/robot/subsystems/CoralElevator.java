@@ -13,6 +13,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import static frc.robot.Constants.ElevatorConstants.*;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class CoralElevator extends SubsystemBase {
@@ -42,9 +43,9 @@ public class CoralElevator extends SubsystemBase {
   public void L3() {
     set_position(level_3);
   }
-  public void L4() {
-    set_position(level_4);
-  }
+ // public void L4() {
+  //  set_position(level_4);
+ // }
   public void coral_station() {
     set_position(coral_s);
   }
@@ -53,6 +54,7 @@ public class CoralElevator extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     m_elevator.set(m_control.calculate(m_encoder.getPosition(), set_point));// called 50 times a second
-    
+    SmartDashboard.putNumber("Elevator Height", m_encoder.getPosition());
+    SmartDashboard.putNumber("Set Point", set_point);
   }
 }
