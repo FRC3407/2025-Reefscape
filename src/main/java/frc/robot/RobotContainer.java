@@ -115,25 +115,25 @@ public class RobotContainer {
             () -> m_robotDrive.zeroHeading(),
             m_robotDrive));
     new JoystickButton(r_attack3, 6)
-        .whileTrue(new RunCommand(
+        .onTrue(new InstantCommand(
             () -> m_elevatorShift.coral_station(),
             m_elevatorShift));
         new JoystickButton(r_attack3, 5)
-        .whileTrue(new RunCommand(
-            () -> m_elevatorShift.coral_station(),
+        .onTrue(new InstantCommand(
+            () -> m_elevatorShift.L1(),
             m_elevatorShift));
             new JoystickButton(r_attack3, 4)
-        .whileTrue(new RunCommand(
-            () -> m_elevatorShift.coral_station(),
+        .onTrue(new InstantCommand(
+            () -> m_elevatorShift.L2(),
             m_elevatorShift));
             new JoystickButton(r_attack3, 3)
-        .whileTrue(new RunCommand(
-            () -> m_elevatorShift.coral_station(),
+        .onTrue(new InstantCommand(
+            () -> m_elevatorShift.L3(),
             m_elevatorShift));
-            new JoystickButton(r_attack3, 2)
-        .whileTrue(new RunCommand(
-            () -> m_elevatorShift.coral_station(),
-            m_elevatorShift));
+          //  new JoystickButton(r_attack3, 8)
+       // .onTrue(new InstantCommand(
+          //  () -> m_elevatorShift.L4(),
+           // m_elevatorShift));
   }
 
   /**
