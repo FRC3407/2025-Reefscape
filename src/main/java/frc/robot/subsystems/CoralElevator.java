@@ -6,6 +6,8 @@ package frc.robot.subsystems;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -15,6 +17,7 @@ import static frc.robot.Constants.ElevatorConstants.*;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Configs;
 
 public class CoralElevator extends SubsystemBase {
   
@@ -26,6 +29,8 @@ public class CoralElevator extends SubsystemBase {
   /** Creates a new CoralElevator. */
   public CoralElevator() {
     m_encoder.setPosition(0); // sets the value of encoder as 0
+    m_elevator.configure(Configs.ElevatorModule.motorConfig, ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
   }
   private void set_position(double height){
     set_point = height;

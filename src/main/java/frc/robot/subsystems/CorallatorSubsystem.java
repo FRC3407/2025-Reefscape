@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
@@ -10,6 +12,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Configs;
 
 public class CorallatorSubsystem extends SubsystemBase {
     private SparkMax m_wrist = new SparkMax(12, MotorType.kBrushless);
@@ -27,6 +30,10 @@ public class CorallatorSubsystem extends SubsystemBase {
     public CorallatorSubsystem() {
         // set_point = m_wristEncoder.getPosition();
         set_point = targetAngleDownDegrees;
+        m_wrist.configure(Configs.CorellatorModule.wristConfig, ResetMode.kResetSafeParameters,
+            PersistMode.kPersistParameters);
+        m_flinger.configure(Configs.CorellatorModule.flingerConfig, ResetMode.kResetSafeParameters,
+            PersistMode.kPersistParameters);
     }
 
     public void angleUp() {

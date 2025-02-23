@@ -7,6 +7,32 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import frc.robot.Constants.ModuleConstants;
 
 public final class Configs {
+
+    public static final class ElevatorModule {
+        public static final SparkMaxConfig motorConfig = new SparkMaxConfig();
+        static {
+            motorConfig
+                    .idleMode(IdleMode.kBrake)
+                    .openLoopRampRate(0.20)
+                    .smartCurrentLimit(20, 80);
+        }
+    }
+
+    public static final class CorellatorModule {
+        public static final SparkMaxConfig wristConfig = new SparkMaxConfig();
+        public static final SparkMaxConfig flingerConfig = new SparkMaxConfig();
+        static {
+            wristConfig
+                    .idleMode(IdleMode.kBrake)
+                    .openLoopRampRate(0.10)
+                    .smartCurrentLimit(20, 80);
+            flingerConfig
+                    .idleMode(IdleMode.kBrake)
+                    .openLoopRampRate(0.10)
+                    .smartCurrentLimit(20, 80);
+        }
+    }
+
     public static final class MAXSwerveModule {
         public static final SparkMaxConfig drivingConfig = new SparkMaxConfig();
         public static final SparkMaxConfig turningConfig = new SparkMaxConfig();
@@ -21,7 +47,7 @@ public final class Configs {
             drivingConfig
                     .idleMode(IdleMode.kBrake)
                     .openLoopRampRate(0.10)
-                    .smartCurrentLimit(20,80);
+                    .smartCurrentLimit(20, 80);
             drivingConfig.encoder
                     .positionConversionFactor(drivingFactor) // meters
                     .velocityConversionFactor(drivingFactor / 60.0); // meters per second
@@ -34,7 +60,7 @@ public final class Configs {
 
             turningConfig
                     .idleMode(IdleMode.kBrake)
-                    .smartCurrentLimit(10,40);
+                    .smartCurrentLimit(10, 40);
             turningConfig.absoluteEncoder
                     // Invert the turning encoder, since the output shaft rotates in the opposite
                     // direction of the steering motor in the MAXSwerve Module.
