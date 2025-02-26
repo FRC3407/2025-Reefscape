@@ -30,7 +30,6 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants;
 import frc.robot.Constants.AutoConstants;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
 public class DriveSubsystem extends SubsystemBase {
   // Create MAXSwerveModules
   private final MAXSwerveModule m_frontLeft = new MAXSwerveModule(
@@ -114,6 +113,7 @@ public class DriveSubsystem extends SubsystemBase {
         });
 
     SmartDashboard.putNumber("Gyro Angle", getHeading());
+    
 
   }
 
