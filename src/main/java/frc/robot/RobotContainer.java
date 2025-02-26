@@ -23,7 +23,10 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.TurnToAngleCommand;
 import frc.robot.subsystems.CoralElevator;
+import frc.robot.commands.AprilTagLookCommand;
+import frc.robot.commands.GotoAprilTagCommand;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -45,7 +48,8 @@ public class RobotContainer {
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private final CoralElevator m_elevatorShift = new CoralElevator();
   private final CorallatorSubsystem m_Corallator = new CorallatorSubsystem();
-  private final CoralElevator m_elevatorShift = new CoralElevator();
+  private final VisionSubsystem m_vision = new VisionSubsystem();
+
   // The driver's controller
   CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
   Joystick l_attack3 = new Joystick(0);
@@ -134,6 +138,8 @@ public class RobotContainer {
        // .onTrue(new InstantCommand(
           //  () -> m_elevatorShift.L4(),
            // m_elevatorShift));
+        m_driverController.x().whileTrue(new AprilTagLookCommand(m_vision,m_robotDrive));
+        m_driverController.y().whileTrue(new GotoAprilTagCommand(m_vision,m_robotDrive));
   }
 
   /**
