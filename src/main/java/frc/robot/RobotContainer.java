@@ -45,7 +45,7 @@ public class RobotContainer {
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private final CoralElevator m_elevatorShift = new CoralElevator();
   private final CorallatorSubsystem m_Corallator = new CorallatorSubsystem();
-  private final CoralElevator m_elevatorShift = new CoralElevator();
+
   // The driver's controller
   CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
   Joystick l_attack3 = new Joystick(0);
