@@ -22,9 +22,9 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.TurnToAngleCommand;
-import frc.robot.subsystems.CoralElevator;
 import frc.robot.commands.AprilTagLookCommand;
 import frc.robot.commands.GotoAprilTagCommand;
+import frc.robot.subsystems.CoralElevator;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -118,6 +118,8 @@ public class RobotContainer {
         .whileTrue(new RunCommand(
             () -> m_robotDrive.zeroHeading(),
             m_robotDrive));
+        m_driverController.x().whileTrue(new AprilTagLookCommand(m_vision,m_robotDrive));
+        m_driverController.y().whileTrue(new GotoAprilTagCommand(m_vision,m_robotDrive));
     new JoystickButton(r_attack3, 6)
         .onTrue(new InstantCommand(
             () -> m_elevatorShift.coral_station(),
@@ -134,10 +136,6 @@ public class RobotContainer {
         .onTrue(new InstantCommand(
             () -> m_elevatorShift.L3(),
             m_elevatorShift));
-          //  new JoystickButton(r_attack3, 8)
-       // .onTrue(new InstantCommand(
-          //  () -> m_elevatorShift.L4(),
-           // m_elevatorShift));
         m_driverController.x().whileTrue(new AprilTagLookCommand(m_vision,m_robotDrive));
         m_driverController.y().whileTrue(new GotoAprilTagCommand(m_vision,m_robotDrive));
   }
