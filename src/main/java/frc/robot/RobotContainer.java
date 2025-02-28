@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import java.util.List;
@@ -49,9 +50,8 @@ public class RobotContainer {
 
   // The driver's controller
   CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
-  Joystick l_attack3 = new Joystick(0);
-
-  Joystick r_attack3 = new Joystick(1);
+  CommandJoystick l_attack3 = new CommandJoystick(0);
+  CommandJoystick r_attack3 = new CommandJoystick(1);
   //pathplanner sendable chooser for auto widget i think
   private final SendableChooser<Command> autoChooser;
 
@@ -88,10 +88,8 @@ public class RobotContainer {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    new JoystickButton(r_attack3, 2)
-        .whileTrue(new RunCommand(
-            () -> m_robotDrive.setX(),
-            m_robotDrive));
+    r_attack3.button(2).whileTrue(new RunCommand(m_robotDrive::setX));
+    
     
     m_driverController.y().onTrue(new InstantCommand(m_Corallator::angleDown));
     m_driverController.a().onTrue(new InstantCommand(m_Corallator::angleUp));
@@ -112,12 +110,9 @@ public class RobotContainer {
 
     JoystickButton coralatordowner = new JoystickButton(l_attack3, 2);
     coralatordowner.onTrue(new InstantCommand(m_Corallator::angleDown));
+    //Stuff to make the gyro reset when pressing the "L2" button
 
-    //new stuff to make the gyro reset when pressing the "L2" button
-    new JoystickButton(r_attack3, 7)
-        .whileTrue(new RunCommand(
-            () -> m_robotDrive.zeroHeading(),
-            m_robotDrive));
+    r_attack3.button(7).onTrue(new InstantCommand(m_robotDrive::zeroHeading));
     new JoystickButton(r_attack3, 4)
         .onTrue(new InstantCommand(
             () -> m_elevatorShift.coral_station(),
