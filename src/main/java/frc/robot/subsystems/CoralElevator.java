@@ -43,9 +43,9 @@ public class CoralElevator extends SubsystemBase {
   public void L3() {
     set_position(level_3);
   }
- // public void L4() {
-  //  set_position(level_4);
- // }
+  public void D_stop() {
+    set_position(d_stop);
+  }
   public void coral_station() {
     set_position(coral_s);
   }
@@ -53,8 +53,16 @@ public class CoralElevator extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    m_elevator.set(m_control.calculate(m_encoder.getPosition(), set_point));// called 50 times a second
-    SmartDashboard.putNumber("Elevator Height", m_encoder.getPosition());
-    SmartDashboard.putNumber("Set Point", set_point);
-  }
+    if(set_point == 0)
+      {
+          m_elevator.set(0.5);
+          m_encoder.setPosition(0);
+      }
+      else
+      {
+          m_elevator.set(m_control.calculate(m_encoder.getPosition(), set_point));// called 50 times a second
+          SmartDashboard.putNumber("Elevator Height", m_encoder.getPosition());
+          SmartDashboard.putNumber("Set Point", set_point);
+      }
+}
 }

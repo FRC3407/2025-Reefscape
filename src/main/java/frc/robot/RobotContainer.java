@@ -27,6 +27,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -49,6 +50,7 @@ public class RobotContainer {
   // The driver's controller
   CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
   Joystick l_attack3 = new Joystick(0);
+
   Joystick r_attack3 = new Joystick(1);
   //pathplanner sendable chooser for auto widget i think
   private final SendableChooser<Command> autoChooser;
@@ -94,8 +96,8 @@ public class RobotContainer {
     m_driverController.y().onTrue(new InstantCommand(m_Corallator::angleDown));
     m_driverController.a().onTrue(new InstantCommand(m_Corallator::angleUp));
 
-    m_driverController.leftBumper().onTrue(new InstantCommand(m_Corallator::outtakeCoral));
-    m_driverController.rightBumper().onTrue(new InstantCommand(m_Corallator::intakeCoral));
+    m_driverController.leftBumper().whileTrue(new StartEndCommand(m_Corallator::outtakeCoral,m_Corallator::stopCoral));
+    m_driverController.rightBumper().whileTrue(new StartEndCommand(m_Corallator::intakeCoral,m_Corallator::stopCoral));
 
     // intake and outtake
     JoystickButton unbing = new JoystickButton(r_attack3, 1);
@@ -132,10 +134,10 @@ public class RobotContainer {
         .onTrue(new InstantCommand(
             () -> m_elevatorShift.L3(),
             m_elevatorShift));
-          //  new JoystickButton(r_attack3, 8)
-       // .onTrue(new InstantCommand(
-          //  () -> m_elevatorShift.L4(),
-           // m_elevatorShift));
+           new JoystickButton(r_attack3, 8)
+        .onTrue(new InstantCommand(
+            () -> m_elevatorShift.D_stop(),
+          m_elevatorShift));
   }
 
   /**
