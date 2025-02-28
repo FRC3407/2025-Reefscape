@@ -94,14 +94,12 @@ public class RobotContainer {
     //upa nd down
     m_driverController.povDown().onTrue(new InstantCommand(m_Corallator::angleDown));
     m_driverController.povUp().onTrue(new InstantCommand(m_Corallator::angleUp));
-
-    m_driverController.leftBumper().whileTrue(new StartEndCommand(m_Corallator::outtakeCoral,m_Corallator::stopCoral));
-    m_driverController.rightBumper().whileTrue(new StartEndCommand(m_Corallator::intakeCoral,m_Corallator::stopCoral));
-
+   
     // intake and outtake
-    m_driverController.rightTrigger().onTrue(new InstantCommand(m_Corallator::outtakeCoral));
 
-    m_driverController.leftTrigger().onTrue(new InstantCommand(m_Corallator::intakeCoral));
+    m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_Corallator::outtakeCoral,m_Corallator::stopCoral));
+    m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_Corallator::intakeCoral,m_Corallator::stopCoral));
+
 
     //Stuff to make the gyro reset when pressing the "L2" button
 
