@@ -30,7 +30,7 @@ public class VisionSubsystem extends SubsystemBase {
   public static List<Integer> blueReefTags = Arrays.asList(17, 18, 19, 20, 21, 22);
   public static List<Integer> blueCoralStationTags = Arrays.asList(1, 2);
 
-  public PhotonCamera camera;
+  private PhotonCamera camera;
 
   // public NetworkTable table;
   /** Creates a new VisionSubsystem. */
@@ -94,6 +94,15 @@ public class VisionSubsystem extends SubsystemBase {
       }
     }
     return null;
+  }
+
+  public boolean cameraSeesTargets() {
+    List<PhotonPipelineResult> results = camera.getAllUnreadResults();
+    for (PhotonPipelineResult res : results) {
+      if (res.hasTargets())
+        return true;
+    }
+    return false;
   }
 
 }

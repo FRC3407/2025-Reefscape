@@ -75,6 +75,6 @@ public class AprilTagLookCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return !visionSubsystem.camera.getLatestResult().hasTargets();
+    return !visionSubsystem.cameraSeesTargets();
   }
 }
