@@ -24,53 +24,55 @@ public class GotoAprilTagCommand extends Command {
 
   public Transform3d lastTargetTransform;
   public boolean useLastTransform = false;
-  
+
   public float timeSinceAprilTagSeen = 0;
 
   /** Creates a new GotoAprilTag. */
   public GotoAprilTagCommand(VisionSubsystem visionSubsystem, DriveSubsystem driveSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.visionSubsystem=visionSubsystem;
-    this.driveSubsystem=driveSubsystem;
-    addRequirements(visionSubsystem,driveSubsystem);
+    this.visionSubsystem = visionSubsystem;
+    this.driveSubsystem = driveSubsystem;
+    addRequirements(visionSubsystem, driveSubsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    PhotonPipelineResult result = visionSubsystem.camera.getLatestResult();
-    if (result.hasTargets()) {
+    PhotonTrackedTarget target = visionSubsystem.getBestReefTarget();
+    if (target != null) {
       timeSinceAprilTagSeen = 0;
-      PhotonTrackedTarget target = result.getBestTarget();
       Transform3d camToTarget = target.getBestCameraToTarget();
-      // System.out.println("I found a target " + camToTarget.getRotation().toString());
-      // System.out.println("I found a target " + camToTarget.getX() + " " + camToTarget.getY());
+      // System.out.println("I found a target " +
+      // camToTarget.getRotation().toString());
+      // System.out.println("I found a target " + camToTarget.getX() + " " +
+      // camToTarget.getY());
       double yaw = camToTarget.getRotation().getZ();
-      System.out.println("Yaw: "+yaw);
+      System.out.println("Yaw: " + yaw);
       double tangentTagSpeed = 0.08;
       double rotationSpeed = 0.3;
 
       double movementX = towardsTagSpeed * camToTarget.getX();
       double movementY = towardsTagSpeed * camToTarget.getY();
-      
-      double newYaw = Math.copySign(Math.PI-Math.abs(yaw), yaw);
+
+      double newYaw = Math.copySign(Math.PI - Math.abs(yaw), yaw);
 
       // movementX -= tangentTagSpeed * Math.sin(yaw);
 
       // System.out.println("I should move "+Math.cos(yaw));
 
-      if (target.getBestCameraToTarget().getX()<closeEnoughXDistance) {
+      if (target.getBestCameraToTarget().getX() < closeEnoughXDistance) {
         movementX = 0;
         movementY *= 3.0;
       }
 
-      driveSubsystem.drive(movementX, movementY, -rotationSpeed*newYaw/Math.max(0.5,camToTarget.getX()*4.0), false);
+      driveSubsystem.drive(movementX, movementY, -rotationSpeed * newYaw / Math.max(0.5, camToTarget.getX() * 4.0),
+          false);
       lastTargetTransform = camToTarget;
       useLastTransform = true;
     } else {
@@ -89,20 +91,18 @@ public class GotoAprilTagCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    PhotonPipelineResult result = visionSubsystem.camera.getLatestResult();
-    if (result.hasTargets()) {
-      PhotonTrackedTarget target = result.getBestTarget();
+    PhotonTrackedTarget target = visionSubsystem.getBestReefTarget();
+    if (target != null) {
+      timeSinceAprilTagSeen = 0;
       Transform3d camToTarget = target.getBestCameraToTarget();
 
       double yaw = camToTarget.getRotation().getZ();
-
-      double newYaw = Math.copySign(Math.PI-Math.abs(yaw), yaw);
+      //
+      double newYaw = Math.copySign(Math.PI - Math.abs(yaw), yaw);
       System.out.println(Math.abs(target.getBestCameraToTarget().getY()));
-      if (
-        camToTarget.getX()<closeEnoughXDistance &&
-        Math.abs(camToTarget.getY())<closeEnoughYDistance &&
-        Math.abs(newYaw)<closeEnoughRotation
-      ) {
+      if (camToTarget.getX() < closeEnoughXDistance &&
+          Math.abs(camToTarget.getY()) < closeEnoughYDistance &&
+          Math.abs(newYaw) < closeEnoughRotation) {
         System.out.println("I did it :)");
         return true;
       }
