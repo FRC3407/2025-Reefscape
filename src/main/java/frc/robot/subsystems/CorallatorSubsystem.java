@@ -17,31 +17,49 @@ public class CorallatorSubsystem extends SubsystemBase{
     private final PIDController m_pidController = new PIDController(1, 0, 0);
     private final double targetAngleUpDegrees = 45;
     private final double targetAngleDownDegrees = -45;
-    private double set_point;
-    public double flingerSpeed = 0.05; 
+    private double setPoint;
+    public double flingerSpeed = 0.05;
+    private boolean justDropped = false; 
+    private double dropTime = 0.0;
      
     public CorallatorSubsystem(){
         
     }
     public void angleUp(){
-        set_point = targetAngleUpDegrees;
+        setPoint = targetAngleUpDegrees;
     }
     public void angleDown(){
-        set_point = targetAngleDownDegrees;
+        setPoint = targetAngleDownDegrees;
     }
     public void intakeCoral(){
         m_flinger.set(flingerSpeed);
     }
     public void outtakeCoral(){
         m_flinger.set(-flingerSpeed);
+        dropTime = System.currentTimeMillis() * 1000;
+    }
+
+    // FILL THIS WITH USEFUL STUFF WHEN L'ÉLECTRICIENNNNNNNNNN INSTALLS THE LIGHT THING
+    private boolean isTakingCoral() {
+        if (true) return false;
+        else return true;
     }
 
     @Override
     public void periodic(){
         double wristAngle = m_wristEncoder.getPosition();
-        double wristSpeed = m_pidController.calculate(m_wristEncoder.getPosition(), set_point);
+        double wristSpeed = m_pidController.calculate(m_wristEncoder.getPosition(), setPoint);
         SmartDashboard.putNumber("wrist encoder value", wristAngle);
         SmartDashboard.putNumber("wrist speed", wristSpeed);
+
+        // TO BE DETERMINED (S'ILS MARCHENT)
+        if (justDropped) {
+            if (System.currentTimeMillis() * 1000 - dropTime > 2) {
+                m_flinger.set(0);
+                justDropped = false;
+            }
+        }
+        if (isTakingCoral() && m_flinger.get() > 0.0) { m_flinger.set(0); }
         //m_wrist.set(wristSpeed);
     }
 }
