@@ -22,10 +22,12 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.TurnToAngleCommand;
+import frc.robot.subsystems.CoralElevator;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -42,11 +44,13 @@ import com.pathplanner.lib.auto.AutoBuilder;
 public class RobotContainer {
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  private final CoralElevator m_elevatorShift = new CoralElevator();
   private final CorallatorSubsystem m_Corallator = new CorallatorSubsystem();
 
   // The driver's controller
   CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
   Joystick l_attack3 = new Joystick(0);
+
   Joystick r_attack3 = new Joystick(1);
   //pathplanner sendable chooser for auto widget i think
   private final SendableChooser<Command> autoChooser;
@@ -88,10 +92,12 @@ public class RobotContainer {
         .whileTrue(new RunCommand(
             () -> m_robotDrive.setX(),
             m_robotDrive));
-    /*m_driverController.x().onTrue(new TurnToAngleCommand(m_robotDrive, -45));
-    m_driverController.a().onTrue(new TurnToAngleCommand(m_robotDrive, 45));*/
-    m_driverController.povDown().onTrue(new InstantCommand(m_Corallator::angleDown));
-    m_driverController.povUp().onTrue(new InstantCommand(m_Corallator::angleUp));
+    
+    m_driverController.y().onTrue(new InstantCommand(m_Corallator::angleDown));
+    m_driverController.a().onTrue(new InstantCommand(m_Corallator::angleUp));
+
+    m_driverController.leftBumper().whileTrue(new StartEndCommand(m_Corallator::outtakeCoral,m_Corallator::stopCoral));
+    m_driverController.rightBumper().whileTrue(new StartEndCommand(m_Corallator::intakeCoral,m_Corallator::stopCoral));
 
     // intake and outtake
     JoystickButton unbing = new JoystickButton(r_attack3, 1);
@@ -101,7 +107,7 @@ public class RobotContainer {
     bing.onTrue(new InstantCommand(m_Corallator::intakeCoral));
 
     // upa nd down
-    JoystickButton coralatorupper = new JoystickButton(l_attack3, 3);
+    JoystickButton coralatorupper = new JoystickButton(l_attack3, 1);
     coralatorupper.onTrue(new InstantCommand(m_Corallator::angleUp));
 
     JoystickButton coralatordowner = new JoystickButton(l_attack3, 2);
@@ -112,6 +118,26 @@ public class RobotContainer {
         .whileTrue(new RunCommand(
             () -> m_robotDrive.zeroHeading(),
             m_robotDrive));
+    new JoystickButton(r_attack3, 4)
+        .onTrue(new InstantCommand(
+            () -> m_elevatorShift.coral_station(),
+            m_elevatorShift));
+        new JoystickButton(r_attack3, 5)
+        .onTrue(new InstantCommand(
+            () -> m_elevatorShift.L1(),
+            m_elevatorShift));
+            new JoystickButton(l_attack3, 4)
+        .onTrue(new InstantCommand(
+            () -> m_elevatorShift.L2(),
+            m_elevatorShift));
+            new JoystickButton(l_attack3, 5)
+        .onTrue(new InstantCommand(
+            () -> m_elevatorShift.L3(),
+            m_elevatorShift));
+           new JoystickButton(r_attack3, 8)
+        .onTrue(new InstantCommand(
+            () -> m_elevatorShift.D_stop(),
+          m_elevatorShift));
   }
 
   /**
