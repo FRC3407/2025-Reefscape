@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import javax.naming.spi.DirStateFactory.Result;
+
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
@@ -23,12 +25,12 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class VisionSubsystem extends SubsystemBase {
-  public static List<Integer> redReefTags = Arrays.asList(6,7,8,9,10,11);
-  public static List<Integer> redCoralStationTags = Arrays.asList(12,13);
-  public static List<Integer> blueReefTags = Arrays.asList(17,18,19,20,21,22);
-  public static List<Integer> blueCoralStationTags = Arrays.asList(1,2);
+  public static List<Integer> redReefTags = Arrays.asList(6, 7, 8, 9, 10, 11);
+  public static List<Integer> redCoralStationTags = Arrays.asList(12, 13);
+  public static List<Integer> blueReefTags = Arrays.asList(17, 18, 19, 20, 21, 22);
+  public static List<Integer> blueCoralStationTags = Arrays.asList(1, 2);
 
-  public PhotonCamera camera;
+  private PhotonCamera camera;
 
   // public NetworkTable table;
   /** Creates a new VisionSubsystem. */
@@ -48,18 +50,21 @@ public class VisionSubsystem extends SubsystemBase {
       // System.out.println(result.getTargets());
       PhotonTrackedTarget target = result.getBestTarget();
 
-      
     }
 
   }
 
-  public List<Integer> getReefTags() {
+  private List<Integer> getReefTags() {
     return DriverStation.getAlliance().get() == Alliance.Red ? redReefTags : blueReefTags;
+  }
+
+  private List<Integer> getCoralStationTags() {
+    return DriverStation.getAlliance().get() == Alliance.Red ? redCoralStationTags : blueCoralStationTags;
   }
 
   public PhotonTrackedTarget getBestReefTarget() {
     List<PhotonPipelineResult> results = camera.getAllUnreadResults();
-    if (results.size()==0) { // Skip if no results
+    if (results.size() == 0) { // Skip if no results
       return null;
     }
     PhotonPipelineResult result = results.get(0);
@@ -72,6 +77,32 @@ public class VisionSubsystem extends SubsystemBase {
       }
     }
     return null;
+  }
+
+  public PhotonTrackedTarget getBestCoralStationTarget() {
+    List<PhotonPipelineResult> results = camera.getAllUnreadResults();
+    if (results.size() == 0) { // Skip if no results
+      return null;
+    }
+    PhotonPipelineResult result = results.get(0);
+    if (!result.hasTargets()) {
+      return null;
+    }
+    for (PhotonTrackedTarget target : result.getTargets()) {
+      if (getCoralStationTags().indexOf(target.getFiducialId()) != -1) {
+        return target;
+      }
+    }
+    return null;
+  }
+
+  public boolean cameraSeesTargets() {
+    List<PhotonPipelineResult> results = camera.getAllUnreadResults();
+    for (PhotonPipelineResult res : results) {
+      if (res.hasTargets())
+        return true;
+    }
+    return false;
   }
 
 }

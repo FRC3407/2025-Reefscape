@@ -100,5 +100,17 @@ public final class Constants {
 
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
+    
+  }
+  public static final class ElevatorConstants {
+    public static final int ElevatorCanId = 10; // correct
+    public static final double P_value = 0.07;
+    public static final double I_value = 0;
+    public static final double D_value = 0;
+    public static final double level_1 = -15.0; //stoped here when adding variable for the height of each level
+    public static final double level_2 = -35.0;
+    public static final double level_3 = -65.0;
+    //public static final double level_4 = -75.0;
+    public static final double coral_s = -22.0;
   }
 }
