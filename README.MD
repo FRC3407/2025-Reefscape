@@ -11,3 +11,5 @@ The FRC 2025 competition code for 3407 Wildcards. This robot uses a wheel and tr
 * PhoenixLib - For interacting with Talon Motors
 * WPILib v2025 - For FRC utilities and classes (this version currently runs 2012 but will switch soon)
 
+## Control scheme:  
+![alt text](assist_controller_graphic.jpg    "Controller")

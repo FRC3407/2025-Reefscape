@@ -37,7 +37,7 @@ public class CoralElevator extends SubsystemBase {
   public void L1() { 
     set_position(level_1);
   } //these are all methods
-  public void L2() {
+    public void L2() {
     set_position(level_2);
   } // void id returning nothing
   public void L3() {
