@@ -41,10 +41,14 @@ public class GotoAprilTagCommand extends Command {
 
   }
 
+  protected PhotonTrackedTarget getBestTarget() {
+    return visionSubsystem.getBestReefTarget();
+  }
+
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    PhotonTrackedTarget target = visionSubsystem.getBestReefTarget();
+    PhotonTrackedTarget target = getBestTarget();
     if (target != null) {
       timeSinceAprilTagSeen = 0;
       Transform3d camToTarget = target.getBestCameraToTarget();
@@ -91,15 +95,14 @@ public class GotoAprilTagCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    PhotonTrackedTarget target = visionSubsystem.getBestReefTarget();
+    PhotonTrackedTarget target = getBestTarget();
     if (target != null) {
       timeSinceAprilTagSeen = 0;
       Transform3d camToTarget = target.getBestCameraToTarget();
 
       double yaw = camToTarget.getRotation().getZ();
-      //
       double newYaw = Math.copySign(Math.PI - Math.abs(yaw), yaw);
-      System.out.println(Math.abs(target.getBestCameraToTarget().getY()));
+      
       if (camToTarget.getX() < closeEnoughXDistance &&
           Math.abs(camToTarget.getY()) < closeEnoughYDistance &&
           Math.abs(newYaw) < closeEnoughRotation) {
