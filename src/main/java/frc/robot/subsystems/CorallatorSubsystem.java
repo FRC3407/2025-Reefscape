@@ -13,15 +13,16 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class CorallatorSubsystem extends SubsystemBase{
     private SparkMax m_wrist = new SparkMax(12, MotorType.kBrushless);
     private RelativeEncoder m_wristEncoder = m_wrist.getEncoder();
-    private SparkFlex m_flinger = new SparkFlex(13, null);
-    private final PIDController m_pidController = new PIDController(1, 0, 0);
-    private final double targetAngleUpDegrees = 45;
-    private final double targetAngleDownDegrees = -45;
+    private SparkFlex m_flinger = new SparkFlex(13, MotorType.kBrushless);
+    private final PIDController m_pidController = new PIDController(.02, 0, 0);
+    private final double targetAngleUpDegrees = 8;
+    private final double targetAngleDownDegrees = -11;
     private double set_point;
-    public double flingerSpeed = 0.05; 
+    public double flingerSpeed = 0.2; 
      
     public CorallatorSubsystem(){
-        
+        // set_point = m_wristEncoder.getPosition();
+        set_point = targetAngleDownDegrees;
     }
     public void angleUp(){
         set_point = targetAngleUpDegrees;
@@ -35,6 +36,9 @@ public class CorallatorSubsystem extends SubsystemBase{
     public void outtakeCoral(){
         m_flinger.set(-flingerSpeed);
     }
+    public void stopCoral() {
+        m_flinger.set(0);
+    }
 
     @Override
     public void periodic(){
@@ -42,6 +46,6 @@ public class CorallatorSubsystem extends SubsystemBase{
         double wristSpeed = m_pidController.calculate(m_wristEncoder.getPosition(), set_point);
         SmartDashboard.putNumber("wrist encoder value", wristAngle);
         SmartDashboard.putNumber("wrist speed", wristSpeed);
-        //m_wrist.set(wristSpeed);
+        m_wrist.set(wristSpeed);
     }
 }
