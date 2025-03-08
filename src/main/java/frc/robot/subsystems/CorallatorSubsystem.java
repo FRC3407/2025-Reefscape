@@ -18,7 +18,7 @@ public class CorallatorSubsystem extends SubsystemBase{
     private final double targetAngleUpDegrees = 8;
     private final double targetAngleDownDegrees = -11;
     private double set_point;
-    public double flingerSpeed = 0.2; 
+    public double flingerSpeed = 0.15; 
      
     public CorallatorSubsystem(){
         // set_point = m_wristEncoder.getPosition();
@@ -31,10 +31,10 @@ public class CorallatorSubsystem extends SubsystemBase{
         set_point = targetAngleDownDegrees;
     }
     public void intakeCoral(){
-        m_flinger.set(flingerSpeed);
+        m_flinger.set(-flingerSpeed);
     }
     public void outtakeCoral(){
-        m_flinger.set(-flingerSpeed);
+        m_flinger.set(flingerSpeed);
     }
     public void stopCoral() {
         m_flinger.set(0);
