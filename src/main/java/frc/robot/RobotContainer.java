@@ -24,11 +24,13 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.commands.TurnToAngleCommand;
 import frc.robot.subsystems.CoralElevator;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import java.util.List;
@@ -46,12 +48,12 @@ public class RobotContainer {
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private final CoralElevator m_elevatorShift = new CoralElevator();
   private final CorallatorSubsystem m_Corallator = new CorallatorSubsystem();
+  private final VisionSubsystem m_vision = new VisionSubsystem();
 
   // The driver's controller
   CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
-  Joystick l_attack3 = new Joystick(0);
-
-  Joystick r_attack3 = new Joystick(1);
+  CommandJoystick l_attack3 = new CommandJoystick(0);
+  CommandJoystick r_attack3 = new CommandJoystick(1);
   //pathplanner sendable chooser for auto widget i think
   private final SendableChooser<Command> autoChooser;
 
@@ -88,56 +90,31 @@ public class RobotContainer {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    new JoystickButton(r_attack3, 2)
-        .whileTrue(new RunCommand(
-            () -> m_robotDrive.setX(),
-            m_robotDrive));
-    
-    m_driverController.y().onTrue(new InstantCommand(m_Corallator::angleDown));
-    m_driverController.a().onTrue(new InstantCommand(m_Corallator::angleUp));
+    r_attack3.button(2).whileTrue(new RunCommand(m_robotDrive::setX));
+    r_attack3.button(7).onTrue(new InstantCommand(m_robotDrive::zeroHeading));
 
-    m_driverController.leftBumper().whileTrue(new StartEndCommand(m_Corallator::outtakeCoral,m_Corallator::stopCoral));
-    m_driverController.rightBumper().whileTrue(new StartEndCommand(m_Corallator::intakeCoral,m_Corallator::stopCoral));
-
+    //upa nd down
+    m_driverController.povDown().onTrue(new InstantCommand(m_Corallator::angleDown));
+    m_driverController.povUp().onTrue(new InstantCommand(m_Corallator::angleUp));
+   
     // intake and outtake
-    JoystickButton unbing = new JoystickButton(r_attack3, 1);
-    unbing.onTrue(new InstantCommand(m_Corallator::outtakeCoral));
 
-    JoystickButton bing = new JoystickButton(r_attack3, 2);
-    bing.onTrue(new InstantCommand(m_Corallator::intakeCoral));
+    m_driverController.leftTrigger().whileTrue(new StartEndCommand(m_Corallator::outtakeCoral,m_Corallator::stopCoral));
+    m_driverController.rightTrigger().whileTrue(new StartEndCommand(m_Corallator::intakeCoral,m_Corallator::stopCoral));
 
-    // upa nd down
-    JoystickButton coralatorupper = new JoystickButton(l_attack3, 1);
-    coralatorupper.onTrue(new InstantCommand(m_Corallator::angleUp));
 
-    JoystickButton coralatordowner = new JoystickButton(l_attack3, 2);
-    coralatordowner.onTrue(new InstantCommand(m_Corallator::angleDown));
+    //Stuff to make the gyro reset when pressing the "L2" button
 
-    //new stuff to make the gyro reset when pressing the "L2" button
-    new JoystickButton(r_attack3, 7)
-        .whileTrue(new RunCommand(
-            () -> m_robotDrive.zeroHeading(),
-            m_robotDrive));
-    new JoystickButton(r_attack3, 4)
-        .onTrue(new InstantCommand(
-            () -> m_elevatorShift.coral_station(),
-            m_elevatorShift));
-        new JoystickButton(r_attack3, 5)
-        .onTrue(new InstantCommand(
-            () -> m_elevatorShift.L1(),
-            m_elevatorShift));
-            new JoystickButton(l_attack3, 4)
-        .onTrue(new InstantCommand(
-            () -> m_elevatorShift.L2(),
-            m_elevatorShift));
-            new JoystickButton(l_attack3, 5)
-        .onTrue(new InstantCommand(
-            () -> m_elevatorShift.L3(),
-            m_elevatorShift));
-           new JoystickButton(r_attack3, 8)
-        .onTrue(new InstantCommand(
-            () -> m_elevatorShift.D_stop(),
-          m_elevatorShift));
+    //let's elevate
+    m_driverController.x().onTrue(new InstantCommand(m_elevatorShift::coral_station));
+
+    m_driverController.a().onTrue(new InstantCommand(m_elevatorShift::L1));
+
+    m_driverController.b().onTrue(new InstantCommand(m_elevatorShift::L2));
+
+    m_driverController.y().onTrue(new InstantCommand(m_elevatorShift::L3));
+
+    m_driverController.rightStick().onTrue(new InstantCommand(m_elevatorShift::D_stop));
   }
 
   /**
