@@ -111,6 +111,6 @@ public final class Constants {
     public static final double level_2 = -5.0;
     public static final double level_3 = -50.0;
     public static final double d_stop = 0;
-    public static final double coral_s = -22.0;
+    public static final double coral_s = 0;
   }
 }
