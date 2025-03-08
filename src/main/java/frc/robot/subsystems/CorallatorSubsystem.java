@@ -21,9 +21,9 @@ public class CorallatorSubsystem extends SubsystemBase {
     private RelativeEncoder m_wristEncoder = m_wrist.getEncoder();
     private SparkFlex m_corallator = new SparkFlex(13, MotorType.kBrushless);
     private SparkLimitSwitch m_limitSwitch = m_corallator.getForwardLimitSwitch();
-    private final PIDController m_pidController = new PIDController(.02, 0, 0);
-    private final double targetAngleUpDegrees = 8; // FIND THE RIGHT ANGLES!!!!!!! :3
-    private final double targetAngleDownDegrees = -11;
+    private final PIDController m_pidController = new PIDController(.04, 0, 0);
+    private final double targetAngleUpDegrees = 14; // FIND THE RIGHT ANGLES!!!!!!! :3
+    private final double targetAngleDownDegrees = -7.5;
     private double setPoint;
     public double flingerSpeed = 0.05;
 
@@ -34,7 +34,7 @@ public class CorallatorSubsystem extends SubsystemBase {
         m_wrist.configure(Configs.CorallatorConfig.m_coralAngleator, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
         m_corallator.configure(Configs.CorallatorConfig.m_coralFlingerator, ResetMode.kResetSafeParameters,
-        PersistMode.kPersistParameters);
+                PersistMode.kPersistParameters);
     }
 
     public void angleUp() {
@@ -71,3 +71,5 @@ public class CorallatorSubsystem extends SubsystemBase {
         m_wrist.set(wristSpeed);
     }
 }
+
+
