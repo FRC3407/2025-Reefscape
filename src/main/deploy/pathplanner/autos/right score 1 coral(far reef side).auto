@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "start to coral"
+            "pathName": "bottom start to bottom right reef"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": null
+            "pathName": "bottom right reef to bottom coral"
           }
         }
       ]
