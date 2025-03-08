@@ -31,10 +31,10 @@ public class CorallatorSubsystem extends SubsystemBase{
         set_point = targetAngleDownDegrees;
     }
     public void intakeCoral(){
-        m_flinger.set(-flingerSpeed);
+        m_flinger.set(flingerSpeed);
     }
     public void outtakeCoral(){
-        m_flinger.set(flingerSpeed);
+        m_flinger.set(-flingerSpeed);
     }
     public void stopCoral() {
         m_flinger.set(0);
