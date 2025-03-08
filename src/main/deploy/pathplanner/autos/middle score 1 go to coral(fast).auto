@@ -7,19 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "left start to left far reef Path"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": null
+            "pathName": "middle start to right reef"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "left far reef to top coral dispenser Path"
+            "pathName": "middle reef to top coral (fast)"
           }
         }
       ]
