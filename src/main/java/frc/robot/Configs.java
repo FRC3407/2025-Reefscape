@@ -17,6 +17,23 @@ public final class Configs {
                 }
         }
 
+        public static final class CorallatorConfig {
+                public static final SparkMaxConfig m_coralFlingerator = new SparkMaxConfig();
+                static {
+                        m_coralFlingerator
+                                        .idleMode(IdleMode.kCoast)
+                                        .openLoopRampRate(0.05)
+                                        .smartCurrentLimit(20, 60);
+                }
+                public static final SparkMaxConfig m_coralAngleator = new SparkMaxConfig();
+                static {
+                        m_coralAngleator
+                                        .idleMode(IdleMode.kCoast)
+                                        .openLoopRampRate(0.05)
+                                        .smartCurrentLimit(10, 20);
+                }
+        }
+
         public static final class MAXSwerveModule {
                 public static final SparkMaxConfig drivingConfig = new SparkMaxConfig();
                 public static final SparkMaxConfig turningConfig = new SparkMaxConfig();
