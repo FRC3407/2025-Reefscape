@@ -1,9 +1,6 @@
 package frc.robot.subsystems;
 
-import org.opencv.video.SparseOpticalFlow;
-
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkAnalogSensor;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkFlex;
@@ -24,12 +21,10 @@ public class CorallatorSubsystem extends SubsystemBase {
     private final PIDController m_pidController = new PIDController(.04, 0, 0);
     private final double targetAngleUpDegrees = 14; // FIND THE RIGHT ANGLES!!!!!!! :3
     private final double targetAngleDownDegrees = -7.5;
-    private double setPoint;
+    private double setPoint = 0;
     public double flingerSpeed = 0.05;
 
     public CorallatorSubsystem() {
-        m_wristEncoder.setPosition(0);
-        setPoint = targetAngleDownDegrees;
         m_wristEncoder.setPosition(0);
         m_wrist.configure(Configs.CorallatorConfig.m_coralAngleator, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
