@@ -7,7 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "straight line"
+            "pathName": "test auto pt 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "test auto pt 2"
           }
         }
       ]
