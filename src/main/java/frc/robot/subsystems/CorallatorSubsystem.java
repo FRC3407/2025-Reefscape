@@ -41,12 +41,10 @@ public class CorallatorSubsystem extends SubsystemBase {
     }
 
     public void intakeCoral() {
-        System.out.println("in in in in in in in in in ");
         m_corallator.set(flingerSpeed);
     }
 
     public void outtakeCoral() {
-        System.out.println("out out out out out out out out ");
         m_corallator.set(-flingerSpeed);
     }
 
