@@ -22,13 +22,13 @@ public class CorallatorSubsystem extends SubsystemBase {
     private final double targetAngleUpDegrees = 14; // FIND THE RIGHT ANGLES!!!!!!! :3
     private final double targetAngleDownDegrees = -7.5;
     private double setPoint = 0;
-    public double flingerSpeed = 0.05;
+    public double flingerSpeed = 0.30;
 
     public CorallatorSubsystem() {
         m_wristEncoder.setPosition(0);
         m_wrist.configure(Configs.CorallatorConfig.m_coralAngleator, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-        m_corallator.configure(Configs.CorallatorConfig.m_coralFlingerator, ResetMode.kResetSafeParameters,
+        m_corallator.configure(Configs.CorallatorConfig.m_corallatorConfig, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
     }
 

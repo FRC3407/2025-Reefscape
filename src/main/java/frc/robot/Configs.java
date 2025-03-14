@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.revrobotics.spark.config.LimitSwitchConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -18,12 +19,17 @@ public final class Configs {
         }
 
         public static final class CorallatorConfig {
-                public static final SparkMaxConfig m_coralFlingerator = new SparkMaxConfig();
+                public static final LimitSwitchConfig limitSwitchConfig = new LimitSwitchConfig();
+                public static final SparkMaxConfig m_corallatorConfig = new SparkMaxConfig();
                 static {
-                        m_coralFlingerator
+                        limitSwitchConfig
+                                        .forwardLimitSwitchEnabled(true)
+                                        .forwardLimitSwitchType(LimitSwitchConfig.Type.kNormallyClosed);
+                        m_corallatorConfig
+                                        .apply(limitSwitchConfig)
                                         .idleMode(IdleMode.kCoast)
                                         .openLoopRampRate(0.05)
-                                        .smartCurrentLimit(20, 60);
+                                        .smartCurrentLimit(80, 60);
                 }
                 public static final SparkMaxConfig m_coralAngleator = new SparkMaxConfig();
                 static {
