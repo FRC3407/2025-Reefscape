@@ -19,7 +19,7 @@ public class CorallatorSubsystem extends SubsystemBase {
     private SparkFlex m_corallator = new SparkFlex(13, MotorType.kBrushless);
     private SparkLimitSwitch m_limitSwitch = m_corallator.getForwardLimitSwitch();
     private final PIDController m_pidController = new PIDController(.04, 0, 0);
-    private final double targetAngleUpDegrees = 14; // FIND THE RIGHT ANGLES!!!!!!! :3
+    private final double targetAngleUpDegrees = 36; // FIND THE RIGHT ANGLES!!!!!!! :3
     private final double targetAngleDownDegrees = -7.5;
     private double setPoint = 0;
     public double flingerSpeed = 0.30;
@@ -34,11 +34,13 @@ public class CorallatorSubsystem extends SubsystemBase {
 
     public void angleUp() {
         setPoint = targetAngleUpDegrees;
+
     }
 
     public void angleDown() {
         setPoint = targetAngleDownDegrees;
     }
+
 
     public void intakeCoral() {
         m_corallator.set(flingerSpeed);
