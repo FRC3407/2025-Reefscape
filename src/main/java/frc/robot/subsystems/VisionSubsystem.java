@@ -30,6 +30,9 @@ public class VisionSubsystem extends SubsystemBase {
   public static List<Integer> blueReefTags = Arrays.asList(17, 18, 19, 20, 21, 22);
   public static List<Integer> blueCoralStationTags = Arrays.asList(1, 2);
 
+  public List<PhotonPipelineResult> lastResults;
+  public float timeSinceLastResults=0;
+
   private PhotonCamera camera;
 
   // public NetworkTable table;
@@ -51,6 +54,7 @@ public class VisionSubsystem extends SubsystemBase {
       PhotonTrackedTarget target = result.getBestTarget();
 
     }
+    timeSinceLastResults+=1.0/50.0;
 
   }
 
@@ -64,18 +68,28 @@ public class VisionSubsystem extends SubsystemBase {
 
   public PhotonTrackedTarget getBestReefTarget() {
     List<PhotonPipelineResult> results = camera.getAllUnreadResults();
+
+    if (results.size() > 0) {
+      lastResults=results;
+      timeSinceLastResults=0;
+    }
     if (results.size() == 0) { // Skip if no results
-      return null;
+      if (timeSinceLastResults<=1.0/9.0) // Use last results if they were recent enough (1/9th of a second)
+        results=lastResults;
+      else
+        return null;
     }
     PhotonPipelineResult result = results.get(0);
     if (!result.hasTargets()) {
       return null;
     }
+    
     for (PhotonTrackedTarget target : result.getTargets()) {
       if (getReefTags().indexOf(target.getFiducialId()) != -1) {
         return target;
       }
     }
+
     return null;
   }
 
