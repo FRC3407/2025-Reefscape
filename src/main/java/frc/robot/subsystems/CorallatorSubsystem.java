@@ -12,6 +12,8 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
+import frc.robot.Constants;
+import frc.robot.Constants.OIConstants;
 
 public class CorallatorSubsystem extends SubsystemBase {
     private SparkMax m_wrist = new SparkMax(12, MotorType.kBrushless);
@@ -56,6 +58,10 @@ public class CorallatorSubsystem extends SubsystemBase {
         m_corallator.set(0);
     }
 
+    public boolean isCorallatorTooHot(){
+        return m_corallator.getMotorTemperature()>Constants.CorallatorConstants.corallatorOverheatTemp;
+    }
+
     @Override
     public void periodic() {
         double wristAngle = m_wristEncoder.getPosition();
@@ -63,8 +69,7 @@ public class CorallatorSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("wrist encoder value", wristAngle);
         SmartDashboard.putNumber("wrist speed", wristSpeed);
         SmartDashboard.putNumber("Corallator ℃", m_corallator.getMotorTemperature());
-        boolean corallatorTooHot = (m_corallator.getMotorTemperature()>37);
-        SmartDashboard.putBoolean("Corallator too hot?", corallatorTooHot);
+        SmartDashboard.putBoolean("Corallator too hot?", isCorallatorTooHot());
 
         m_wrist.set(wristSpeed);
     }
