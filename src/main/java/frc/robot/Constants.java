@@ -107,9 +107,10 @@ public final class Constants {
     public static final double P_value = 0.07;
     public static final double I_value = 0;
     public static final double D_value = 0;
-    public static final double level_1 = 0; //stoped here when adding variable for the height of each level
+    public static final double level_1 = 0; //stopped here when adding variable for the height of each level
     public static final double level_2 = -5.0;
     public static final double level_3 = -50.0;
+    public static final double level_4 = -70.0;
     public static final double d_stop = 0;
     public static final double coral_s = 0;
   }
