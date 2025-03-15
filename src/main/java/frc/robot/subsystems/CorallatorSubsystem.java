@@ -62,6 +62,9 @@ public class CorallatorSubsystem extends SubsystemBase {
         double wristSpeed = m_pidController.calculate(m_wristEncoder.getPosition(), setPoint);
         SmartDashboard.putNumber("wrist encoder value", wristAngle);
         SmartDashboard.putNumber("wrist speed", wristSpeed);
+        SmartDashboard.putNumber("Corallator ℃", m_corallator.getMotorTemperature());
+        boolean corallatorTooHot = (m_corallator.getMotorTemperature()>37);
+        SmartDashboard.putBoolean("Corallator too hot?", corallatorTooHot);
 
         m_wrist.set(wristSpeed);
     }
