@@ -57,6 +57,10 @@ public class CoralElevator extends SubsystemBase {
         set_position(level_3);
     }
 
+    public void L4() {
+        set_position(level_4);
+  }
+
     public void D_stop() {
         set_position(d_stop);
     }

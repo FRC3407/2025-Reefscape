@@ -98,7 +98,7 @@ public class RobotContainer {
         // Stuff to make the gyro reset when pressing the "L2" button
 
         // let's elevate
-        m_driverController.x().onTrue(new InstantCommand(m_elevatorShift::coral_station));
+        m_driverController.x().onTrue(new InstantCommand(m_elevatorShift::L4));
 
         m_driverController.a().onTrue(new InstantCommand(m_elevatorShift::L1));
 
