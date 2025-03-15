@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -41,6 +43,7 @@ public class RobotContainer {
     CommandJoystick r_attack3 = new CommandJoystick(1);
     // pathplanner sendable chooser for auto widget i think
     private final SendableChooser<Command> autoChooser;
+    UsbCamera camera1;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -69,6 +72,10 @@ public class RobotContainer {
         // build an autochooser. Uses Commands.none() as default option
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
+        
+        camera1 = CameraServer.startAutomaticCapture(0);
+        camera1.setResolution(320, 240);
+        camera1.setFPS(7);
     }
 
     /**

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+      }
+    </style>
+  </head>
+  <body>
+    <img
+      id="stream1"
+      src="http://172.22.11.2:1181/stream.mjpg"
+      alt="camera 1"
+    />
+    <!-- <img src="http://172.22.11.2:1182/stream.mjpg" alt="camera 2" /> -->
+    <script>
+      const stream1 = document.getElementById("stream1");
+      let cameraID = 1;
+
+      function switchCameras() {
+        cameraID = cameraID === 1 ? 2 : 1;
+        stream1.src = `http://172.22.11.2:118${cameraID}/stream.mjpg`;
+      }
+
+      // on space button press
+      document.addEventListener("keydown", (e) => {
+        if (e.code === "ShiftLeft") {
+          switchCameras();
+        }
+      });
+
+      //   setInterval(switchCameras);
+    </script>
+  </body>
+</html>
