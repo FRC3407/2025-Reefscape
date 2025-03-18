@@ -90,9 +90,9 @@ public class RobotContainer {
 
         // intake and outtake
 
-        m_driverController.leftTrigger()
-                .whileTrue(new StartEndCommand(m_Corallator::outtakeCoral, m_Corallator::stopCoral));
         m_driverController.rightTrigger()
+                .whileTrue(new StartEndCommand(m_Corallator::outtakeCoral, m_Corallator::stopCoral));
+        m_driverController.leftTrigger()
                 .whileTrue(new StartEndCommand(m_Corallator::intakeCoral, m_Corallator::stopCoral));
 
         // Stuff to make the gyro reset when pressing the "L2" button
