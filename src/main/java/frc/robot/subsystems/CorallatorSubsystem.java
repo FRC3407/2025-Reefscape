@@ -18,6 +18,8 @@ public class CorallatorSubsystem extends SubsystemBase {
     private RelativeEncoder m_wristEncoder = m_wrist.getEncoder();
     private SparkFlex m_corallator = new SparkFlex(13, MotorType.kBrushless);
     private SparkLimitSwitch m_limitSwitch = m_corallator.getForwardLimitSwitch();
+    private SparkLimitSwitch m_wristLimitSwitch = m_wrist.getForwardLimitSwitch();
+    private final double maxWristAngle = 38;
     private final PIDController m_pidController = new PIDController(.04, 0, 0);
     private final double targetAngleUpDegrees = 36; // FIND THE RIGHT ANGLES!!!!!!! :3
     private final double targetAngleDownDegrees = -7.5;
@@ -64,8 +66,10 @@ public class CorallatorSubsystem extends SubsystemBase {
         double wristSpeed = m_pidController.calculate(m_wristEncoder.getPosition(), setPoint);
         SmartDashboard.putNumber("wrist encoder value", wristAngle);
         SmartDashboard.putNumber("wrist speed", wristSpeed);
-
-        m_wrist.set(wristSpeed);
+        SmartDashboard.putBoolean("wrist switch pressed", m_wristLimitSwitch.isPressed());
+        if (m_wristLimitSwitch.isPressed()){
+            m_wristEncoder.setPosition(maxWristAngle);
+        }
     }
 }
 
