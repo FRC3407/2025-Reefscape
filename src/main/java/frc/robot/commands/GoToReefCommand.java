@@ -4,9 +4,15 @@
 
 package frc.robot.commands;
 
+import org.photonvision.PhotonUtils;
+import org.photonvision.PhotonVersion;
+import org.photonvision.proto.Photon;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveSubsystem;
@@ -22,8 +28,11 @@ public class GoToReefCommand extends Command {
   public static double closeEnoughRotation = 0.1; // about 5.7 degrees
   public static double towardsTagSpeed = 0.1; // TODO: make this a constant later
 
+  public static AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+
   public Transform3d lastTargetTransform;
   public boolean useLastTransform = false;
+  public Pose3d lastPose;
 
   public float timeSinceAprilTagSeen = 0;
 
@@ -71,6 +80,12 @@ public class GoToReefCommand extends Command {
           false);
       lastTargetTransform = camToTarget;
       useLastTransform = true;
+      // AprilTagFieldLayout.loadFromResource("")
+      lastPose = PhotonUtils.estimateFieldToRobotAprilTag(
+        camToTarget,
+        fieldLayout.getTagPose(target.fiducialId).get(),
+        camToTarget
+      );
     } else {
       driveSubsystem.drive(0, 0, 0, false);
       timeSinceAprilTagSeen += 0.02;
@@ -99,6 +114,7 @@ public class GoToReefCommand extends Command {
           Math.abs(camToTarget.getY()) < closeEnoughYDistance &&
           Math.abs(newYaw) < closeEnoughRotation) {
         System.out.println("I did it :)");
+        driveSubsystem.resetOdometry(lastPose.toPose2d());
         return true;
       }
     }
