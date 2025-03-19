@@ -24,7 +24,9 @@ public class CorallatorSubsystem extends SubsystemBase {
     private final double targetAngleUpDegrees = 36; // FIND THE RIGHT ANGLES!!!!!!! :3
     private final double targetAngleDownDegrees = -7.5;
     private double setPoint = 0;
-    public double flingerSpeed = 0.30;
+    private double flingerSpeed = 0.30;
+    private boolean enablePID = true;
+    private double manualSpeed = 0;
 
     public CorallatorSubsystem() {
         m_wristEncoder.setPosition(0);
@@ -36,11 +38,12 @@ public class CorallatorSubsystem extends SubsystemBase {
 
     public void angleUp() {
         setPoint = targetAngleUpDegrees;
-
+        enablePID = true;
     }
 
     public void angleDown() {
         setPoint = targetAngleDownDegrees;
+        enablePID = true;
     }
 
 
@@ -60,10 +63,20 @@ public class CorallatorSubsystem extends SubsystemBase {
         m_corallator.set(0);
     }
 
+    public boolean isWristSwitchPressed(){
+        return m_wristLimitSwitch.isPressed();
+    }
+
+    public void setManualWristSpeed(double speed){
+        manualSpeed = speed;
+        enablePID = false;
+    }
+
     @Override
     public void periodic() {
         double wristAngle = m_wristEncoder.getPosition();
-        double wristSpeed = m_pidController.calculate(m_wristEncoder.getPosition(), setPoint);
+        double wristSpeed = enablePID?m_pidController.calculate(m_wristEncoder.getPosition(), setPoint):manualSpeed;
+        m_wrist.set(wristSpeed);
         SmartDashboard.putNumber("wrist encoder value", wristAngle);
         SmartDashboard.putNumber("wrist speed", wristSpeed);
         SmartDashboard.putBoolean("wrist switch pressed", m_wristLimitSwitch.isPressed());
