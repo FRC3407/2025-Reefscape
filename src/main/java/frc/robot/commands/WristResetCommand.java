@@ -18,7 +18,9 @@ public class WristResetCommand extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    m_corallatorSubsystem.setManualWristSpeed(0.4);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
