@@ -114,4 +114,7 @@ public final class Constants {
     public static final double d_stop = 0;
     public static final double coral_s = 0;
   }
+  public static final class CorallatorConstants {
+    public static final double corallatorOverheatTemp = 60;
+  }
 }
