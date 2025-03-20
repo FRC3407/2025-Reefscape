@@ -9,10 +9,13 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.GoToReefCommand;
+import frc.robot.commands.GoToStationCommand;
 import frc.robot.subsystems.CoralElevator;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -20,7 +23,10 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.CorallatorSubsystem;
+
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -66,22 +72,20 @@ public class RobotContainer {
                                 -MathUtil.applyDeadband(r_attack3.getX(), OIConstants.kDriveDeadband),
                                 true),
                         m_robotDrive));
-        // build an autochooser. Uses Commands.none() as default option
-        autoChooser = AutoBuilder.buildAutoChooser();
+
+        autoChooser = configureAutonomousRoutines();
         SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
     /**
      * Use this method to define your button->command mappings. Buttons can be
-     * created by
-     * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its
-     * subclasses ({@link
-     * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then calling
-     * passing it to a
+     * created by instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of
+     * its subclasses ({@link edu.wpi.first.wpilibj.Joystick} or
+     * {@link XboxController}), and then calling passing it to a
      * {@link JoystickButton}.
      */
     private void configureButtonBindings() {
-        r_attack3.button(2).whileTrue(new RunCommand(m_robotDrive::setX));
+        // r_attack3.button(2).whileTrue(new RunCommand(m_robotDrive::setX));
         r_attack3.button(7).onTrue(new InstantCommand(m_robotDrive::zeroHeading));
 
         // upa nd down
@@ -90,9 +94,9 @@ public class RobotContainer {
 
         // intake and outtake
 
-        m_driverController.rightTrigger()
-                .whileTrue(new StartEndCommand(m_Corallator::outtakeCoral, m_Corallator::stopCoral));
         m_driverController.leftTrigger()
+                .whileTrue(new StartEndCommand(m_Corallator::outtakeCoral, m_Corallator::stopCoral));
+        m_driverController.rightTrigger()
                 .whileTrue(new StartEndCommand(m_Corallator::intakeCoral, m_Corallator::stopCoral));
 
         // Stuff to make the gyro reset when pressing the "L2" button
@@ -110,55 +114,52 @@ public class RobotContainer {
     }
 
     /**
+     * Configure the auto chooser
+     * Define NamedCommands, EventTriggers, etc for Pathplanner.
+     * Or, user this method to create entirely new autonomous commands.
+     */
+    private SendableChooser<Command> configureAutonomousRoutines() {
+        NamedCommands.registerCommand("gotoReef", new GoToReefCommand(m_vision, m_robotDrive));
+        NamedCommands.registerCommand("gotoStation", new GoToStationCommand(m_vision, m_robotDrive));
+        NamedCommands.registerCommand("elevatorToLevel1", new InstantCommand(m_elevatorShift::L1));
+        NamedCommands.registerCommand("elevatorToLevel2", new InstantCommand(m_elevatorShift::L2));
+        NamedCommands.registerCommand("elevatorToLevel3", new InstantCommand(m_elevatorShift::L3));
+        NamedCommands.registerCommand("elevatorToLevel4", new InstantCommand(m_elevatorShift::L4));
+        NamedCommands.registerCommand("outtakeCoral", new RunCommand(m_Corallator::outtakeCoral).withTimeout(2.0));
+
+        SendableChooser<Command> chooser = AutoBuilder.buildAutoChooser();
+
+        Command gotoReefCommand = (fromPathFile("left side to reef").alongWith(new InstantCommand(m_elevatorShift::L2)))
+                .andThen(new GoToReefCommand(m_vision, m_robotDrive))
+                .andThen(new RunCommand(m_Corallator::outtakeCoral).withTimeout(2.0))
+                .andThen(new InstantCommand(m_Corallator::stopCoral))
+                .andThen(fromPathFile("left side to station"))
+                .andThen(new GoToStationCommand(m_vision, m_robotDrive));
+        chooser.addOption("Left L2 Reef Score", gotoReefCommand);
+
+        return chooser;
+    }
+
+    /**
+     * @param pathName Name of a PathPlanner path definition file.
+     * @return a Command that will execute the given path.
+     */
+    private Command fromPathFile(String pathName) {
+        try {
+            PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
+            return AutoBuilder.followPath(path);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Commands.none();
+        }
+    }
+
+    /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
-        /*
-         * // Create config for trajectory
-         * TrajectoryConfig config = new TrajectoryConfig(
-         * AutoConstants.kMaxSpeedMetersPerSecond,
-         * AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-         * // Add kinematics to ensure max speed is actually obeyed
-         * .setKinematics(DriveConstants.kDriveKinematics);
-         * 
-         * // An example trajectory to follow. All units in meters.
-         * Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-         * // Start at the origin facing the +X direction
-         * new Pose2d(0, 0, new Rotation2d(0)),
-         * // Pass through these two interior waypoints, making an 's' curve path
-         * List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-         * // End 3 meters straight ahead of where we started, facing forward
-         * new Pose2d(3, 0, new Rotation2d(0)),
-         * config);
-         * 
-         * var thetaController = new ProfiledPIDController(
-         * AutoConstants.kPThetaController, 0, 0,
-         * AutoConstants.kThetaControllerConstraints);
-         * thetaController.enableContinuousInput(-Math.PI, Math.PI);
-         * 
-         * SwerveControllerCommand swerveControllerCommand = new
-         * SwerveControllerCommand(
-         * exampleTrajectory,
-         * m_robotDrive::getPose, // Functional interface to feed supplier
-         * DriveConstants.kDriveKinematics,
-         * 
-         * // Position controllers
-         * new PIDController(AutoConstants.kPXController, 0, 0),
-         * new PIDController(AutoConstants.kPYController, 0, 0),
-         * thetaController,
-         * m_robotDrive::setModuleStates,
-         * m_robotDrive);
-         * 
-         * // Reset odometry to the starting pose of the trajectory.
-         * m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
-         * 
-         * // Run path following command, then stop at the end.
-         * return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0,
-         * false));
-         */
-
     }
 }

@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants;
-import frc.robot.Constants.OIConstants;
 
 public class CorallatorSubsystem extends SubsystemBase {
     private SparkMax m_wrist = new SparkMax(12, MotorType.kBrushless);
