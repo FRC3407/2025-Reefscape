@@ -58,13 +58,15 @@ public class GoToReefCommand extends Command {
   @Override
   public void execute() {
     PhotonTrackedTarget target = getBestTarget();
+    System.out.println("target: " + target);
+    System.out.println("can it see: " + visionSubsystem.cameraSeesTargets());
     if (target != null) {
       timeSinceAprilTagSeen = 0;
       Transform3d camToTarget = target.getBestCameraToTarget();
 
       double yaw = camToTarget.getRotation().getZ();
       System.out.println("Yaw: " + yaw);
-      double rotationSpeed = 0.3;
+      double rotationSpeed = 0.5;
 
       double movementX = towardsTagSpeed * camToTarget.getX();
       double movementY = towardsTagSpeed * camToTarget.getY();
@@ -97,6 +99,10 @@ public class GoToReefCommand extends Command {
   public void end(boolean interrupted) {
     driveSubsystem.drive(0, 0, 0, false);
     System.out.println("goto april tag ended. int: " + interrupted);
+    System.out.println("last target transform: " + lastTargetTransform);
+    if (!interrupted) {
+      
+    }
   }
 
   // Returns true when the command should end.
@@ -118,7 +124,7 @@ public class GoToReefCommand extends Command {
         return true;
       }
     }
-    if (timeSinceAprilTagSeen >= 1.0) {
+    if (timeSinceAprilTagSeen >= 0.3) {
       System.out.println("I can't find it :(");
       return true;
     }
