@@ -84,9 +84,11 @@ public class RobotContainer {
         r_attack3.button(2).whileTrue(new RunCommand(m_robotDrive::setX));
         r_attack3.button(7).onTrue(new InstantCommand(m_robotDrive::zeroHeading));
 
-        // upa nd down
-        m_driverController.povDown().onTrue(new InstantCommand(m_Corallator::angleDown));
-        m_driverController.povUp().onTrue(new InstantCommand(m_Corallator::angleUp));
+        // upa nd down :))
+        m_driverController.povDown().onTrue(new InstantCommand(m_Corallator::angleReef));
+        m_driverController.povUp().onTrue(new InstantCommand(m_Corallator::angleAlgae));
+        m_driverController.povRight().onTrue(new InstantCommand(m_Corallator::angleStation));
+
 
         // intake and outtake
 
