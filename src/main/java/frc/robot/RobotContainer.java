@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.WristResetCommand;
 import frc.robot.commands.GoToReefCommand;
 import frc.robot.subsystems.CoralElevator;
 import frc.robot.subsystems.DriveSubsystem;
@@ -111,6 +112,7 @@ public class RobotContainer {
 
         m_driverController.rightStick().onTrue(new InstantCommand(m_elevatorShift::D_stop));
 
+        m_driverController.leftStick().onTrue(new WristResetCommand(m_Corallator));
         m_driverController.leftBumper().whileTrue(new GoToReefCommand(m_vision, m_robotDrive));
     }
 
