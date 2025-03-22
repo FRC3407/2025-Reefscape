@@ -14,6 +14,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import static frc.robot.Constants.ElevatorConstants.*;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -66,6 +67,12 @@ public class CoralElevator extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    
+          SmartDashboard.putNumber("Elevator Height", m_encoder.getPosition());
+          SmartDashboard.putNumber("Set Point", set_point);
+          SmartDashboard.putString("Using PID", "NO");
+          SmartDashboard.putBoolean("Forward Limit Switch Status", m_switch1.isPressed());
+          SmartDashboard.putBoolean("Reverse Limit Switch Status", m_switch0.isPressed());
     if(set_point == 0)
       {
           m_elevator.set(0.5);
@@ -73,11 +80,18 @@ public class CoralElevator extends SubsystemBase {
       }
       else
       {
-          m_elevator.set(m_control.calculate(m_encoder.getPosition(), set_point));// called 50 times a second
-          SmartDashboard.putNumber("Elevator Height", m_encoder.getPosition());
-          SmartDashboard.putNumber("Set Point", set_point);
-          SmartDashboard.putBoolean("Forward Limit Switch Status", m_switch1.isPressed());
-          SmartDashboard.putBoolean("Reverse Limit Switch Status", m_switch0.isPressed());
+
+        double motor_speed = MathUtil.clamp(-0.1+m_control.calculate(m_encoder.getPosition(), set_point),-1.0 , 1.0);
+
+        m_elevator.set(motor_speed);// called 50 times a second
+        SmartDashboard.putNumber("Motor Speed", motor_speed);
+        SmartDashboard.putString("Using PID", "YES");
+          if(m_switch1.isPressed()) //Already returning a true or false value
+          {
+            m_encoder.setPosition(0);
+          }
+//* and a if statement to see if the robot is going up or down(like negative moving motor is going up, positive going down,)
+//* add power, p value when it is going up and else for when it is going down. */
       }
 }
-}
+};
