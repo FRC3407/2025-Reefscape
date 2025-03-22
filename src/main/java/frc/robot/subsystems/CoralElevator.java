@@ -78,6 +78,10 @@ public class CoralElevator extends SubsystemBase {
           SmartDashboard.putNumber("Set Point", set_point);
           SmartDashboard.putBoolean("Forward Limit Switch Status", m_switch1.isPressed());
           SmartDashboard.putBoolean("Reverse Limit Switch Status", m_switch0.isPressed());
+          if(m_switch1.isPressed()) //Already returning a true or false value
+          {
+            m_encoder.setPosition(0);
+          }
       }
 }
-}
+};
