@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.GoToReefCommand;
 import frc.robot.subsystems.CoralElevator;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -68,6 +69,15 @@ public class RobotContainer {
                         m_robotDrive));
         // build an autochooser. Uses Commands.none() as default option
         autoChooser = AutoBuilder.buildAutoChooser();
+
+        Command autoDropCoralCommand = new GoToReefCommand(m_vision, m_robotDrive)
+        .andThen(new InstantCommand(m_Corallator::angleDown))
+        .andThen(new InstantCommand(m_elevatorShift::L2))
+        .andThen(new RunCommand(m_Corallator::outtakeCoral).withTimeout(2))
+        .andThen(new InstantCommand(m_Corallator::stopCoral));
+
+        autoChooser.addOption("auto drop coral", autoDropCoralCommand);
+
         SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
@@ -107,6 +117,8 @@ public class RobotContainer {
         m_driverController.b().onTrue(new InstantCommand(m_elevatorShift::L2));
 
         m_driverController.y().onTrue(new InstantCommand(m_elevatorShift::L3));
+
+        m_driverController.leftBumper().whileTrue(new GoToReefCommand(m_vision, m_robotDrive));
 
         m_driverController.rightStick().onTrue(new InstantCommand(m_elevatorShift::D_stop));
     }
