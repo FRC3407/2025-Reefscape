@@ -21,9 +21,22 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class LightsSubsystem extends SubsystemBase {
 
     public static final int MAX_ANIMATIONS = 20; // Must be 32 or less
-    public static final int MAX_STRIPS = 5; // Must be 8 or less
+    public static final int MAX_STRIPS = 3; // Must be 8 or less
     public static int I2C_ADDRESS = 0x41;
     private static int MAX_PARAM = 64;
+
+    // Strips:
+    public static final int SIDE_STRIPS = 0;
+    public static final int PANEL_1 = 1;
+    public static final int PANEL_2 = 2;
+
+    // Animations:
+    public static final int LADDER_RED = 0;
+    public static final int LADDER_BLUE = 1;
+    public static final int LADDER_WHITE = 2;
+    public static final int PULSE_GREEN = 3;
+    public static final int PULSE_RED = 4;
+    public static final int PULSE_PURPLE = 5;
 
     private AnimationState[] currentAnimation = new AnimationState[MAX_STRIPS];
     private AnimationState[] nextAnimation = new AnimationState[MAX_STRIPS];
@@ -47,17 +60,17 @@ public class LightsSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // TODO: monitor internal robot state and change animations as necessary 
-        //       using setAnimation or clearAllAnimations
+        // TODO: monitor internal robot state and change animations as necessary
+        // using setAnimation or clearAllAnimations
 
         if (DriverStation.isDisabled()) {
-            // Turn side lights Moving Purple
+            setAnimation(SIDE_STRIPS, PULSE_PURPLE);
         } else if (m_Corallator.isCorallatorTooHot()) {
-            // Turn side lights Red
+            setAnimation(SIDE_STRIPS, PULSE_RED);
         } else if (m_Corallator.hasCoral()) {
-            // Turn side lights Green
+            setAnimation(SIDE_STRIPS, PULSE_GREEN);
         } else {
-            // Turn side lights Moving Blue
+            setAnimation(SIDE_STRIPS, LADDER_WHITE);
         }
 
         if (DriverStation.isDisabled()) {
@@ -85,14 +98,14 @@ public class LightsSubsystem extends SubsystemBase {
         }
     }
 
-    /* 
-    protected void setAnimation(int stripNumber, int animNumber, String param) {
-        nextAnimation[stripNumber].animNumber = animNumber;
-        nextAnimation[stripNumber].param = param;
-    }
-    */
+    /*
+     * protected void setAnimation(int stripNumber, int animNumber, String param) {
+     * nextAnimation[stripNumber].animNumber = animNumber;
+     * nextAnimation[stripNumber].param = param;
+     * }
+     */
 
-   /**
+    /**
      * Set one strip to have the numbered animation.
      * <br>
      * This should not be called from outside this subsystem. It should only be
