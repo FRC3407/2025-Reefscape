@@ -13,6 +13,7 @@ public class WristResetCommand extends Command {
   private final CorallatorSubsystem m_corallatorSubsystem;
   public WristResetCommand(CorallatorSubsystem corallatorSubsystem) {
     m_corallatorSubsystem = corallatorSubsystem;
+    addRequirements(corallatorSubsystem);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
