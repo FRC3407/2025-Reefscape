@@ -13,7 +13,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class GotoAprilTagCommand extends Command {
+public class GoToReefCommand extends Command {
   public final VisionSubsystem visionSubsystem;
   public final DriveSubsystem driveSubsystem;
 
@@ -28,7 +28,7 @@ public class GotoAprilTagCommand extends Command {
   public float timeSinceAprilTagSeen = 0;
 
   /** Creates a new GotoAprilTag. */
-  public GotoAprilTagCommand(VisionSubsystem visionSubsystem, DriveSubsystem driveSubsystem) {
+  public GoToReefCommand(VisionSubsystem visionSubsystem, DriveSubsystem driveSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.visionSubsystem = visionSubsystem;
     this.driveSubsystem = driveSubsystem;
@@ -52,7 +52,7 @@ public class GotoAprilTagCommand extends Command {
     if (target != null) {
       timeSinceAprilTagSeen = 0;
       Transform3d camToTarget = target.getBestCameraToTarget();
-      
+
       double yaw = camToTarget.getRotation().getZ();
       System.out.println("Yaw: " + yaw);
       double rotationSpeed = 0.3;
@@ -94,7 +94,7 @@ public class GotoAprilTagCommand extends Command {
 
       double yaw = camToTarget.getRotation().getZ();
       double newYaw = Math.copySign(Math.PI - Math.abs(yaw), yaw);
-      
+
       if (camToTarget.getX() < closeEnoughXDistance &&
           Math.abs(camToTarget.getY()) < closeEnoughYDistance &&
           Math.abs(newYaw) < closeEnoughRotation) {
