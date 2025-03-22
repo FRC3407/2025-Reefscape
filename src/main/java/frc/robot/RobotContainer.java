@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.WristResetCommand;
+import frc.robot.commands.GoToReefCommand;
 import frc.robot.subsystems.CoralElevator;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -85,15 +86,17 @@ public class RobotContainer {
         r_attack3.button(2).whileTrue(new RunCommand(m_robotDrive::setX));
         r_attack3.button(7).onTrue(new InstantCommand(m_robotDrive::zeroHeading));
 
-        // upa nd down
-        m_driverController.povDown().onTrue(new InstantCommand(m_Corallator::angleDown));
-        m_driverController.povUp().onTrue(new InstantCommand(m_Corallator::angleUp));
+        // upa nd down :))
+        m_driverController.povDown().onTrue(new InstantCommand(m_Corallator::angleReef));
+        m_driverController.povUp().onTrue(new InstantCommand(m_Corallator::angleAlgae));
+        m_driverController.povRight().onTrue(new InstantCommand(m_Corallator::angleStation));
+
 
         // intake and outtake
 
-        m_driverController.leftTrigger()
-                .whileTrue(new StartEndCommand(m_Corallator::outtakeCoral, m_Corallator::stopCoral));
         m_driverController.rightTrigger()
+                .whileTrue(new StartEndCommand(m_Corallator::outtakeCoral, m_Corallator::stopCoral));
+        m_driverController.leftTrigger()
                 .whileTrue(new StartEndCommand(m_Corallator::intakeCoral, m_Corallator::stopCoral));
 
         // Stuff to make the gyro reset when pressing the "L2" button
@@ -110,6 +113,7 @@ public class RobotContainer {
         m_driverController.rightStick().onTrue(new InstantCommand(m_elevatorShift::D_stop));
 
         m_driverController.leftStick().onTrue(new WristResetCommand(m_Corallator));
+        m_driverController.leftBumper().whileTrue(new GoToReefCommand(m_vision, m_robotDrive));
     }
 
     /**

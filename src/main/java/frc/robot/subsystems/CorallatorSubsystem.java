@@ -12,6 +12,8 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
+import frc.robot.Constants;
+import frc.robot.Constants.OIConstants;
 
 public class CorallatorSubsystem extends SubsystemBase {
     private SparkMax m_wrist = new SparkMax(12, MotorType.kBrushless);
@@ -21,8 +23,9 @@ public class CorallatorSubsystem extends SubsystemBase {
     private SparkLimitSwitch m_wristLimitSwitch = m_wrist.getForwardLimitSwitch();
     private final double maxWristAngle = 41;
     private final PIDController m_pidController = new PIDController(.04, 0, 0);
-    private final double targetAngleUpDegrees = 36; // FIND THE RIGHT ANGLES!!!!!!! :3
-    private final double targetAngleDownDegrees = -7.5;
+    private final double targetAngleAlgaePlucker = 33.2616; // FIND THE RIGHT ANGLES!!!!!!! :3 (done perhaps)
+    private final double targetAngleCoralReef = -8.9286;
+    private final double targetAngleCoralStation = 1.5714;
     private double setPoint = 0;
     private double flingerSpeed = 0.30;
     private boolean enablePID = true;
@@ -36,16 +39,21 @@ public class CorallatorSubsystem extends SubsystemBase {
                 PersistMode.kPersistParameters);
     }
 
-    public void angleUp() {
-        setPoint = targetAngleUpDegrees;
+
+    public void angleReef() {
+        setPoint = targetAngleCoralReef;
         enablePID = true;
+
     }
 
-    public void angleDown() {
-        setPoint = targetAngleDownDegrees;
+    public void angleAlgae() {
+        setPoint = targetAngleAlgaePlucker;
         enablePID = true;
     }
-
+    public void angleStation(){
+        setPoint = targetAngleCoralStation;
+        enablePID = true;
+    }
 
     public void intakeCoral() {
         m_corallator.set(flingerSpeed);
@@ -70,6 +78,8 @@ public class CorallatorSubsystem extends SubsystemBase {
     public void setManualWristSpeed(double speed){
         manualSpeed = speed;
         enablePID = false;
+    public boolean isCorallatorTooHot(){
+        return m_corallator.getMotorTemperature()>Constants.CorallatorConstants.corallatorOverheatTemp;
     }
 
     @Override
@@ -83,6 +93,9 @@ public class CorallatorSubsystem extends SubsystemBase {
         if (m_wristLimitSwitch.isPressed()){
             m_wristEncoder.setPosition(maxWristAngle);
         }
+        SmartDashboard.putNumber("Corallator ℃", m_corallator.getMotorTemperature());
+        SmartDashboard.putBoolean("Corallator too hot?", isCorallatorTooHot());
+
     }
 }
 

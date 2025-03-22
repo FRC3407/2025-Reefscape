@@ -14,7 +14,7 @@ public final class Configs {
                         m_elavator
                                         .idleMode(IdleMode.kBrake)
                                         .openLoopRampRate(0.30)
-                                        .smartCurrentLimit(20, 80);
+                                        .smartCurrentLimit(30, 80);
                 }
         }
 
