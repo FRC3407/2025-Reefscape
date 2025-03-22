@@ -19,7 +19,7 @@ public class CorallatorSubsystem extends SubsystemBase {
     private SparkFlex m_corallator = new SparkFlex(13, MotorType.kBrushless);
     private SparkLimitSwitch m_limitSwitch = m_corallator.getForwardLimitSwitch();
     private SparkLimitSwitch m_wristLimitSwitch = m_wrist.getForwardLimitSwitch();
-    private final double maxWristAngle = 38;
+    private final double maxWristAngle = 41;
     private final PIDController m_pidController = new PIDController(.04, 0, 0);
     private final double targetAngleUpDegrees = 36; // FIND THE RIGHT ANGLES!!!!!!! :3
     private final double targetAngleDownDegrees = -7.5;
