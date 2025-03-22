@@ -13,6 +13,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveSubsystem;
@@ -63,6 +64,7 @@ public class GoToReefCommand extends Command {
     if (target != null) {
       timeSinceAprilTagSeen = 0;
       Transform3d camToTarget = target.getBestCameraToTarget();
+      camToTarget=camToTarget.plus(new Transform3d(0.34,0,0, new Rotation3d()));
 
       double yaw = camToTarget.getRotation().getZ();
       System.out.println("Yaw: " + yaw);
@@ -81,6 +83,7 @@ public class GoToReefCommand extends Command {
       driveSubsystem.drive(movementX, movementY, -rotationSpeed * newYaw / Math.max(0.5, camToTarget.getX() * 4.0),
           false);
       lastTargetTransform = camToTarget;
+      visionSubsystem.lastTransformStash = lastTargetTransform;
       useLastTransform = true;
       // AprilTagFieldLayout.loadFromResource("")
       lastPose = PhotonUtils.estimateFieldToRobotAprilTag(

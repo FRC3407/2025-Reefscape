@@ -17,11 +17,14 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.networktables.IntegerArraySubscriber;
 import edu.wpi.first.networktables.IntegerArrayTopic;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class VisionSubsystem extends SubsystemBase {
@@ -32,6 +35,8 @@ public class VisionSubsystem extends SubsystemBase {
 
   public List<PhotonPipelineResult> lastResults;
   public float timeSinceLastResults=0;
+
+  public Transform3d lastTransformStash=new Transform3d();
 
   private PhotonCamera camera;
 
@@ -56,6 +61,8 @@ public class VisionSubsystem extends SubsystemBase {
 
     }
     timeSinceLastResults+=1.0/50.0;
+
+    SmartDashboard.putString("vision transform", lastTransformStash.toString());
 
   }
 
