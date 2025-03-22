@@ -78,6 +78,8 @@ public class CorallatorSubsystem extends SubsystemBase {
     public void setManualWristSpeed(double speed){
         manualSpeed = speed;
         enablePID = false;
+    }
+    
     public boolean isCorallatorTooHot(){
         return m_corallator.getMotorTemperature()>Constants.CorallatorConstants.corallatorOverheatTemp;
     }

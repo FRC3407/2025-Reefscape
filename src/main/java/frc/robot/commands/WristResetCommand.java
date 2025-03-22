@@ -30,7 +30,7 @@ public class WristResetCommand extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_corallatorSubsystem.angleUp();
+    m_corallatorSubsystem.angleAlgae();
   }
 
   // Returns true when the command should end.
