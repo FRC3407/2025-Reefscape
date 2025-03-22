@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.CorallatorSubsystem;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -47,6 +48,15 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
+
+        Command autoDropCoralCommand = new GoToReefCommand(m_vision, m_robotDrive)
+        .andThen(new InstantCommand(m_Corallator::angleDown))
+        .andThen(new InstantCommand(m_elevatorShift::L2))
+        .andThen(new RunCommand(m_Corallator::outtakeCoral).withTimeout(2))
+        .andThen(new InstantCommand(m_Corallator::stopCoral));
+
+        NamedCommands.registerCommand("autoDropCoralCommand", autoDropCoralCommand);
+
         // Configure the button bindings
         configureButtonBindings();
 
@@ -70,11 +80,6 @@ public class RobotContainer {
         // build an autochooser. Uses Commands.none() as default option
         autoChooser = AutoBuilder.buildAutoChooser();
 
-        Command autoDropCoralCommand = new GoToReefCommand(m_vision, m_robotDrive)
-        .andThen(new InstantCommand(m_Corallator::angleDown))
-        .andThen(new InstantCommand(m_elevatorShift::L2))
-        .andThen(new RunCommand(m_Corallator::outtakeCoral).withTimeout(2))
-        .andThen(new InstantCommand(m_Corallator::stopCoral));
 
         autoChooser.addOption("auto drop coral", autoDropCoralCommand);
 
