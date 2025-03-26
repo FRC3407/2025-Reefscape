@@ -81,7 +81,8 @@ public final class Constants {
   public static final class OIConstants {
     public static final int kDriverControllerPort = 2;
     public static final double kDriveDeadband = 0.05;
-    public static final double kSecondDriverPower = 0.15;  }
+    public static final double kSecondDriverPower = 0.10;  
+  }
 
   public static final class AutoConstants {
     public static final double kMaxSpeedMetersPerSecond = 3;

@@ -20,8 +20,8 @@ public class CorallatorSubsystem extends SubsystemBase {
     private RelativeEncoder m_wristEncoder = m_wrist.getEncoder();
     private SparkFlex m_corallator = new SparkFlex(13, MotorType.kBrushless);
     private SparkLimitSwitch m_limitSwitch = m_corallator.getForwardLimitSwitch();
-    private SparkLimitSwitch m_wristLimitSwitch = m_wrist.getForwardLimitSwitch();
-    private final double maxWristAngle = 41;
+    private SparkLimitSwitch m_wristLimitSwitch = m_wrist.getReverseLimitSwitch();
+    private final double minWristAngle = -7.8;
     private final PIDController m_pidController = new PIDController(.04, 0, 0);
     private final double targetAngleAlgaePlucker = 33.2616; // FIND THE RIGHT ANGLES!!!!!!! :3 (done perhaps)
     private final double targetAngleCoralReef = -8.9286;
@@ -93,7 +93,7 @@ public class CorallatorSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("wrist speed", wristSpeed);
         SmartDashboard.putBoolean("wrist switch pressed", m_wristLimitSwitch.isPressed());
         if (m_wristLimitSwitch.isPressed()){
-            m_wristEncoder.setPosition(maxWristAngle);
+            m_wristEncoder.setPosition(minWristAngle);
         }
         SmartDashboard.putNumber("Corallator ℃", m_corallator.getMotorTemperature());
         SmartDashboard.putBoolean("Corallator too hot?", isCorallatorTooHot());
