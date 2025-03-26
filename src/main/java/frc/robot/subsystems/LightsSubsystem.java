@@ -155,6 +155,7 @@ public class LightsSubsystem extends SubsystemBase {
         int animNumber = nextAnimation[stripNumber].animNumber;
         Integer b = Integer.valueOf(((stripNumber << 5) & 0xE0) | (animNumber & 0x1F));
         dataOut[dataLength++] = b.byteValue();
+System.out.println("::: sendOneAnimation(" + stripNumber + "," + animNumber + ") ");
 
         if (nextAnimation[stripNumber].param != null && nextAnimation[stripNumber].param.length() > 0) {
             for (int i = 0; i < nextAnimation[stripNumber].param.length() && i < MAX_PARAM; i++) {
