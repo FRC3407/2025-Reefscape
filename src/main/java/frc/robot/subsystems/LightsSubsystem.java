@@ -67,7 +67,7 @@ public class LightsSubsystem extends SubsystemBase {
             setAnimation(SIDE_STRIPS, LADDER_WHITE);
         } else if (DriverStation.isAutonomous()) {
             setAnimation(SIDE_STRIPS, PULSE_RED);
-        } else if (DriverStation.isAutonomous()) {
+        } else if (DriverStation.isTeleop()) {
             setAnimation(SIDE_STRIPS, PULSE_GREEN);
         } else if (DriverStation.isTest()) {
             setAnimation(SIDE_STRIPS, PULSE_PURPLE);
