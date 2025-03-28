@@ -58,14 +58,14 @@ public class RobotContainer {
                 new RunCommand(
                         () -> m_robotDrive.drive(
                                 -MathUtil.applyDeadband(
-                                        l_attack3.getY()
+                                        l_attack3.getY() * Math.abs(l_attack3.getY())
                                                 + m_driverController.getLeftY() * OIConstants.kSecondDriverPower,
                                         OIConstants.kDriveDeadband),
                                 -MathUtil.applyDeadband(
-                                        l_attack3.getX()
+                                        l_attack3.getX() *Math.abs(l_attack3.getX())
                                                 + m_driverController.getLeftX() * OIConstants.kSecondDriverPower,
                                         OIConstants.kDriveDeadband),
-                                -MathUtil.applyDeadband(r_attack3.getX(), OIConstants.kDriveDeadband),
+                                -MathUtil.applyDeadband(r_attack3.getX()*Math.abs(r_attack3.getX()), OIConstants.kDriveDeadband),
                                 true),
                         m_robotDrive));
         // build an autochooser. Uses Commands.none() as default option
