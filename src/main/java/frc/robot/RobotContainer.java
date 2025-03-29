@@ -78,11 +78,11 @@ public class RobotContainer {
 	}
 
 	private SendableChooser<Command> getAutoChooser() {
-		NamedCommands.registerCommand("Spit Out The Coral", new CoralEjectCommand(m_corallator));
-		NamedCommands.registerCommand("Eat The Coral", new CoralFeederCommand(m_corallator));
-		NamedCommands.registerCommand("Ready For Intake", new InstantCommand(m_elevatorShift::coral_station, m_elevatorShift));
-		NamedCommands.registerCommand("Lower To L1", new InstantCommand(m_elevatorShift::L1, m_elevatorShift));
-		NamedCommands.registerCommand("Raise To L2", new InstantCommand(m_elevatorShift::L2, m_elevatorShift)); // duplicates but
+		NamedCommands.registerCommand("Spit Out the Coral", new CoralEjectCommand(m_corallator));
+		NamedCommands.registerCommand("Eat the Coral", new CoralFeederCommand(m_corallator));
+		NamedCommands.registerCommand("Ready for Intake", new InstantCommand(m_elevatorShift::coral_station, m_elevatorShift));
+		NamedCommands.registerCommand("Lower to L1", new InstantCommand(m_elevatorShift::L1, m_elevatorShift));
+		NamedCommands.registerCommand("Raise to L2", new InstantCommand(m_elevatorShift::L2, m_elevatorShift)); // duplicates but
 		NamedCommands.registerCommand("Low Algae", new InstantCommand(m_elevatorShift::L2, m_elevatorShift)); // who cares ?
 		NamedCommands.registerCommand("High Algae", new InstantCommand(m_elevatorShift::L3, m_elevatorShift));
 		NamedCommands.registerCommand("Angle Reef", new InstantCommand(m_corallator::angleReef, m_corallator)); // these are

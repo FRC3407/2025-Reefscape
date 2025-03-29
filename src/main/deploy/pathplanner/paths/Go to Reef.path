@@ -3,42 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.763012295081966,
-        "y": 7.255686475409835
+        "x": 7.084733606557376,
+        "y": 7.483452868852458
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.7484737025745964,
-        "y": 7.274596039855467
+        "x": 6.413422131147541,
+        "y": 7.171772540983605
       },
       "isLocked": true,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.3785860655737705,
-        "y": 6.9679815573770485
+        "x": 5.406454918032787,
+        "y": 5.481506147540983
       },
       "prevControl": {
-        "x": 2.7645084536403557,
-        "y": 7.004359569825863
+        "x": 6.077766393442623,
+        "y": 6.236731557377049
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Left Side Reef"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "Pick Up the Coral",
-      "waypointRelativePos": 1.0,
-      "endWaypointRelativePos": null,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -49,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 127.14668669802181
+    "rotation": -119.99999999999999
   },
   "reversed": false,
   "folder": null,
