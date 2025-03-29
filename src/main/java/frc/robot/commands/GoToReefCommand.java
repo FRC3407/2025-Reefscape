@@ -24,9 +24,10 @@ public class GoToReefCommand extends Command {
   public final VisionSubsystem visionSubsystem;
   public final DriveSubsystem driveSubsystem;
 
-  public static double closeEnoughXDistance = 0.35;
-  public static double closeEnoughYDistance = 0.05;
+  public static double closeEnoughXDistance = 0.25;
+  public static double closeEnoughYDistance = 0.02;
   public static double closeEnoughRotation = 0.1; // about 5.7 degrees
+
   public static double towardsTagSpeed = 0.1; // TODO: make this a constant later
 
   public static AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
@@ -59,8 +60,9 @@ public class GoToReefCommand extends Command {
   @Override
   public void execute() {
     PhotonTrackedTarget target = getBestTarget();
-    System.out.println("target: " + target);
-    System.out.println("can it see: " + visionSubsystem.cameraSeesTargets());
+    // System.out.println("");
+    // System.out.println("target:");
+    // System.out.println(target);
     if (target != null) {
       timeSinceAprilTagSeen = 0;
       Transform3d camToTarget = target.getBestCameraToTarget();
@@ -68,10 +70,12 @@ public class GoToReefCommand extends Command {
 
       double yaw = camToTarget.getRotation().getZ();
       System.out.println("Yaw: " + yaw);
-      double rotationSpeed = 0.5;
+      double rotationSpeed = 0.8;
 
-      double movementX = towardsTagSpeed * camToTarget.getX();
-      double movementY = towardsTagSpeed * camToTarget.getY();
+      double movementX = 0.3*Math.sqrt(towardsTagSpeed * (camToTarget.getX()-closeEnoughXDistance+0.002));
+      double movementY = 1.5 * Math.sqrt(towardsTagSpeed * camToTarget.getY());
+
+      System.out.println("move y: "+movementY);
 
       double newYaw = Math.copySign(Math.PI - Math.abs(yaw), yaw);
 
@@ -80,6 +84,7 @@ public class GoToReefCommand extends Command {
         movementY *= 3.0;
       }
 
+      System.out.println("drivvingg");
       driveSubsystem.drive(movementX, movementY, -rotationSpeed * newYaw / Math.max(0.5, camToTarget.getX() * 4.0),
           false);
       lastTargetTransform = camToTarget;
@@ -92,6 +97,7 @@ public class GoToReefCommand extends Command {
         camToTarget
       );
     } else {
+      System.out.println("stopping");
       driveSubsystem.drive(0, 0, 0, false);
       timeSinceAprilTagSeen += 0.02;
     }

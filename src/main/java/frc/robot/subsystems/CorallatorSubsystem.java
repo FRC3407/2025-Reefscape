@@ -20,11 +20,16 @@ public class CorallatorSubsystem extends SubsystemBase {
     private RelativeEncoder m_wristEncoder = m_wrist.getEncoder();
     private SparkFlex m_corallator = new SparkFlex(13, MotorType.kBrushless);
     private SparkLimitSwitch m_limitSwitch = m_corallator.getForwardLimitSwitch();
+    private SparkLimitSwitch m_wristLimitSwitch = m_wrist.getReverseLimitSwitch();
+    private final double minWristAngle = -7.8;
     private final PIDController m_pidController = new PIDController(.04, 0, 0);
-    private final double targetAngleUpDegrees = 36; // FIND THE RIGHT ANGLES!!!!!!! :3
-    private final double targetAngleDownDegrees = -7.5;
+    private final double targetAngleAlgaePlucker = 33.2616; // FIND THE RIGHT ANGLES!!!!!!! :3 (done perhaps)
+    private final double targetAngleCoralReef = -8.9286;
+    private final double targetAngleCoralStation = 1.5714;
     private double setPoint = 0;
-    public double flingerSpeed = 0.30;
+    private double flingerSpeed = 0.30;
+    private boolean enablePID = true;
+    private double manualSpeed = 0;
 
     public CorallatorSubsystem() {
         m_wristEncoder.setPosition(0);
@@ -34,15 +39,21 @@ public class CorallatorSubsystem extends SubsystemBase {
                 PersistMode.kPersistParameters);
     }
 
-    public void angleUp() {
-        setPoint = targetAngleUpDegrees;
+
+    public void angleReef() {
+        setPoint = targetAngleCoralReef;
+        enablePID = true;
 
     }
 
-    public void angleDown() {
-        setPoint = targetAngleDownDegrees;
+    public void angleAlgae() {
+        setPoint = targetAngleAlgaePlucker;
+        enablePID = true;
     }
-
+    public void angleStation(){
+        setPoint = targetAngleCoralStation;
+        enablePID = true;
+    }
 
     public void intakeCoral() {
         m_corallator.set(flingerSpeed);
@@ -60,6 +71,15 @@ public class CorallatorSubsystem extends SubsystemBase {
         m_corallator.set(0);
     }
 
+    public boolean isWristSwitchPressed(){
+        return m_wristLimitSwitch.isPressed();
+    }
+
+    public void setManualWristSpeed(double speed){
+        manualSpeed = speed;
+        enablePID = false;
+    }
+    
     public boolean isCorallatorTooHot(){
         return m_corallator.getMotorTemperature()>Constants.CorallatorConstants.corallatorOverheatTemp;
     }
@@ -67,13 +87,17 @@ public class CorallatorSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         double wristAngle = m_wristEncoder.getPosition();
-        double wristSpeed = m_pidController.calculate(m_wristEncoder.getPosition(), setPoint);
+        double wristSpeed = enablePID?m_pidController.calculate(m_wristEncoder.getPosition(), setPoint):manualSpeed;
+        m_wrist.set(wristSpeed);
         SmartDashboard.putNumber("wrist encoder value", wristAngle);
         SmartDashboard.putNumber("wrist speed", wristSpeed);
+        SmartDashboard.putBoolean("wrist switch pressed", m_wristLimitSwitch.isPressed());
+        if (m_wristLimitSwitch.isPressed()){
+            m_wristEncoder.setPosition(minWristAngle);
+        }
         SmartDashboard.putNumber("Corallator ℃", m_corallator.getMotorTemperature());
         SmartDashboard.putBoolean("Corallator too hot?", isCorallatorTooHot());
 
-        m_wrist.set(wristSpeed);
     }
 }
 

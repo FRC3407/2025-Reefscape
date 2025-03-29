@@ -82,6 +82,12 @@ public class VisionSubsystem extends SubsystemBase {
       timeSinceLastResults=0;
     }
     if (results.size() == 0) { // Skip if no results
+      if (timeSinceLastResults<=1.0/9.0) // Use last results if they were recent enough (1/9th of a second)
+        results=lastResults;
+      else
+        return null;
+    }
+    if (results.size() == 0) { // Skip if no results
       if (timeSinceLastResults<=1.0/5.0) // Use last results if they were recent enough (1/9th of a second)
         results=lastResults;
       else

@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.WristResetCommand;
+import frc.robot.commands.GoToReefCommand;
 import frc.robot.commands.DriveDistanceCommand;
 import frc.robot.commands.GoToReefCommand;
 import frc.robot.subsystems.CoralElevator;
@@ -51,7 +53,7 @@ public class RobotContainer {
     public RobotContainer() {
 
         Command autoDropCoralCommand = new GoToReefCommand(m_vision, m_robotDrive)
-        .andThen(new InstantCommand(m_Corallator::angleDown))
+        .andThen(new InstantCommand(m_Corallator::angleReef))
         .andThen(new InstantCommand(m_elevatorShift::L2))
         .andThen(new RunCommand(m_Corallator::outtakeCoral).withTimeout(2))
         .andThen(new InstantCommand(m_Corallator::stopCoral));
@@ -68,14 +70,14 @@ public class RobotContainer {
                 new RunCommand(
                         () -> m_robotDrive.drive(
                                 -MathUtil.applyDeadband(
-                                        l_attack3.getY()
+                                        l_attack3.getY() * Math.abs(l_attack3.getY())
                                                 + m_driverController.getLeftY() * OIConstants.kSecondDriverPower,
                                         OIConstants.kDriveDeadband),
                                 -MathUtil.applyDeadband(
-                                        l_attack3.getX()
+                                        l_attack3.getX() *Math.abs(l_attack3.getX())
                                                 + m_driverController.getLeftX() * OIConstants.kSecondDriverPower,
                                         OIConstants.kDriveDeadband),
-                                -MathUtil.applyDeadband(r_attack3.getX(), OIConstants.kDriveDeadband),
+                                -MathUtil.applyDeadband(r_attack3.getX()*Math.abs(r_attack3.getX()), OIConstants.kDriveDeadband),
                                 true),
                         m_robotDrive));
         // build an autochooser. Uses Commands.none() as default option
@@ -100,9 +102,11 @@ public class RobotContainer {
         r_attack3.button(2).whileTrue(new RunCommand(m_robotDrive::setX));
         r_attack3.button(7).onTrue(new InstantCommand(m_robotDrive::zeroHeading));
 
-        // upa nd down
-        m_driverController.povDown().onTrue(new InstantCommand(m_Corallator::angleDown));
-        m_driverController.povUp().onTrue(new InstantCommand(m_Corallator::angleUp));
+        // upa nd down :))
+        m_driverController.povDown().onTrue(new InstantCommand(m_Corallator::angleReef));
+        m_driverController.povUp().onTrue(new InstantCommand(m_Corallator::angleAlgae));
+        m_driverController.povRight().onTrue(new InstantCommand(m_Corallator::angleStation));
+
 
         // intake and outtake
 
@@ -122,10 +126,14 @@ public class RobotContainer {
 
         m_driverController.y().onTrue(new InstantCommand(m_elevatorShift::L3));
 
+        // Testing controlls for vision
         m_driverController.leftBumper().whileTrue(new GoToReefCommand(m_vision, m_robotDrive));
-        m_driverController.leftStick().whileTrue(new DriveDistanceCommand(m_vision, m_robotDrive));
+        m_driverController.rightStick().whileTrue(new DriveDistanceCommand(m_vision, m_robotDrive));
 
         m_driverController.rightStick().onTrue(new InstantCommand(m_elevatorShift::D_stop));
+
+        m_driverController.leftStick().onTrue(new WristResetCommand(m_Corallator));
+        m_driverController.leftBumper().whileTrue(new GoToReefCommand(m_vision, m_robotDrive));
     }
 
     /**
