@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Go to Reef L"
+                  "pathName": "Go to Reef R"
                 }
               },
               {
@@ -36,7 +36,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Coral High"
+                  "name": "Coral Low"
                 }
               }
             ]
