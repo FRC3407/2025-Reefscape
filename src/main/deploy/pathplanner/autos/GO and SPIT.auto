@@ -15,15 +15,28 @@
                 }
               },
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "Raise to L2"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Wrist Reset"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Angle Reef"
+                      }
+                    }
+                  ]
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Angle Reef"
+                  "name": "Coral High"
                 }
               }
             ]

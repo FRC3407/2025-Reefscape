@@ -81,10 +81,10 @@ public class RobotContainer {
 		NamedCommands.registerCommand("Spit Out the Coral", new CoralEjectCommand(m_corallator));
 		NamedCommands.registerCommand("Eat the Coral", new CoralFeederCommand(m_corallator));
 		NamedCommands.registerCommand("Ready for Intake", new InstantCommand(m_elevatorShift::coral_station, m_elevatorShift));
-		NamedCommands.registerCommand("Lower to L1", new InstantCommand(m_elevatorShift::L1, m_elevatorShift));
-		NamedCommands.registerCommand("Raise to L2", new InstantCommand(m_elevatorShift::L2, m_elevatorShift)); // duplicates but
-		NamedCommands.registerCommand("Low Algae", new InstantCommand(m_elevatorShift::L2, m_elevatorShift)); // who cares ?
-		NamedCommands.registerCommand("High Algae", new InstantCommand(m_elevatorShift::L3, m_elevatorShift));
+		NamedCommands.registerCommand("Coral Low", new InstantCommand(m_elevatorShift::coral_low, m_elevatorShift));
+		NamedCommands.registerCommand("Coral High", new InstantCommand(m_elevatorShift::coral_high, m_elevatorShift)); // duplicates but
+		NamedCommands.registerCommand("Algae Low", new InstantCommand(m_elevatorShift::algae_low, m_elevatorShift)); // who cares ?
+		NamedCommands.registerCommand("Algae High", new InstantCommand(m_elevatorShift::algae_high, m_elevatorShift));
 		NamedCommands.registerCommand("Angle Reef", new InstantCommand(m_corallator::angleReef, m_corallator)); // these are
 		NamedCommands.registerCommand("Angle Station", new InstantCommand(m_corallator::angleStation, m_corallator)); // all self-
 		NamedCommands.registerCommand("Angle Algae", new InstantCommand(m_corallator::angleAlgae, m_corallator)); // explanatory
@@ -120,10 +120,10 @@ public class RobotContainer {
 		// Stuff to make the gyro reset when pressing the "L2" button
 
 		// let's elevate
-		m_driverController.x().onTrue(new InstantCommand(m_elevatorShift::L4));
-		m_driverController.a().onTrue(new InstantCommand(m_elevatorShift::L1));
-		m_driverController.b().onTrue(new InstantCommand(m_elevatorShift::L2));
-		m_driverController.y().onTrue(new InstantCommand(m_elevatorShift::L3));
+		m_driverController.a().onTrue(new InstantCommand(m_elevatorShift::coral_low));
+		m_driverController.b().onTrue(new InstantCommand(m_elevatorShift::algae_low));
+		m_driverController.x().onTrue(new InstantCommand(m_elevatorShift::algae_high));
+		m_driverController.y().onTrue(new InstantCommand(m_elevatorShift::coral_high));
 
 		m_driverController.rightStick().onTrue(new InstantCommand(m_elevatorShift::D_stop));
 

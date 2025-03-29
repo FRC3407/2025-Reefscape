@@ -48,20 +48,21 @@ public class CoralElevator extends SubsystemBase {
 		set_point = m_encoder.getPosition();
 	}
 
-	public void L1() {
-		set_position(level_1);
+	public void coral_low() {
+		set_position(coral_low);
 	} // these are all methods
 
-	public void L2() {
-		set_position(level_2);
+	
+	public void coral_high() {
+		set_position(coral_high);
+	}
+	
+	public void algae_low() {
+		set_position(algae_low);
 	}
 
-	public void L3() {
-		set_position(level_3);
-	}
-
-	public void L4() {
-		set_position(level_4);
+	public void algae_high() {
+		set_position(algae_high);
 	} // THIS FUNCTION IS UNUSED BUT DON'T DELETE IT BECAUSE IT MIGHT BE USEFUL AT SOME POINT OR ANOTHER OK THANK YOU
 
 	public void D_stop() {
