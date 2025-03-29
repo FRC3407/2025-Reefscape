@@ -63,7 +63,7 @@ public class CorallatorSubsystem extends SubsystemBase {
         m_corallator.set(-flingerSpeed);
     }
 
-    private boolean hasCoral() {
+    public boolean hasCoral() {
         return m_limitSwitch.isPressed();
     }
 
