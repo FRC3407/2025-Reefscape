@@ -82,19 +82,13 @@ public class RobotContainer {
 	private SendableChooser<Command> getAutoChooser() {
 		NamedCommands.registerCommand("Spit Out the Coral", new CoralEjectCommand(m_corallator));
 		NamedCommands.registerCommand("Eat the Coral", new CoralFeederCommand(m_corallator));
-		NamedCommands.registerCommand("Ready for Intake",
-				new InstantCommand(m_elevatorShift::coral_station, m_elevatorShift));
+		NamedCommands.registerCommand("Ready for Intake", new InstantCommand(m_elevatorShift::coral_station, m_elevatorShift));
 		NamedCommands.registerCommand("Coral Low", new InstantCommand(m_elevatorShift::coral_low, m_elevatorShift));
 		NamedCommands.registerCommand("Coral High", new InstantCommand(m_elevatorShift::coral_high, m_elevatorShift)); // duplicates
-																														// but
-		NamedCommands.registerCommand("Algae Low", new InstantCommand(m_elevatorShift::algae_low, m_elevatorShift)); // who
-																														// cares
-																														// ?
+		NamedCommands.registerCommand("Algae Low", new InstantCommand(m_elevatorShift::algae_low, m_elevatorShift)); // but who cares ?
 		NamedCommands.registerCommand("Algae High", new InstantCommand(m_elevatorShift::algae_high, m_elevatorShift));
-		NamedCommands.registerCommand("Angle Reef", new InstantCommand(m_corallator::angleReef, m_corallator)); // these
-																												// are
-		NamedCommands.registerCommand("Angle Station", new InstantCommand(m_corallator::angleStation, m_corallator)); // all
-																														// self-
+		NamedCommands.registerCommand("Angle Reef", new InstantCommand(m_corallator::angleReef, m_corallator)); // these are 
+		NamedCommands.registerCommand("Angle Station", new InstantCommand(m_corallator::angleStation, m_corallator)); // all self-
 		NamedCommands.registerCommand("Angle Algae", new InstantCommand(m_corallator::angleAlgae, m_corallator)); // explanatory
 		NamedCommands.registerCommand("Wrist Reset", new WristResetCommand(m_corallator));
 		return AutoBuilder.buildAutoChooser();
