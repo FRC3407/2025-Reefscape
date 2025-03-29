@@ -43,7 +43,6 @@ public class CorallatorSubsystem extends SubsystemBase {
     public void angleReef() {
         setPoint = targetAngleCoralReef;
         enablePID = true;
-
     }
 
     public void angleAlgae() {
