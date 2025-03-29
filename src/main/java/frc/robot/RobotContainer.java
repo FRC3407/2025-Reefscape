@@ -17,6 +17,7 @@ import frc.robot.subsystems.CoralElevator;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -26,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.CorallatorSubsystem;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -80,13 +82,19 @@ public class RobotContainer {
 	private SendableChooser<Command> getAutoChooser() {
 		NamedCommands.registerCommand("Spit Out the Coral", new CoralEjectCommand(m_corallator));
 		NamedCommands.registerCommand("Eat the Coral", new CoralFeederCommand(m_corallator));
-		NamedCommands.registerCommand("Ready for Intake", new InstantCommand(m_elevatorShift::coral_station, m_elevatorShift));
+		NamedCommands.registerCommand("Ready for Intake",
+				new InstantCommand(m_elevatorShift::coral_station, m_elevatorShift));
 		NamedCommands.registerCommand("Coral Low", new InstantCommand(m_elevatorShift::coral_low, m_elevatorShift));
-		NamedCommands.registerCommand("Coral High", new InstantCommand(m_elevatorShift::coral_high, m_elevatorShift)); // duplicates but
-		NamedCommands.registerCommand("Algae Low", new InstantCommand(m_elevatorShift::algae_low, m_elevatorShift)); // who cares ?
+		NamedCommands.registerCommand("Coral High", new InstantCommand(m_elevatorShift::coral_high, m_elevatorShift)); // duplicates
+																														// but
+		NamedCommands.registerCommand("Algae Low", new InstantCommand(m_elevatorShift::algae_low, m_elevatorShift)); // who
+																														// cares
+																														// ?
 		NamedCommands.registerCommand("Algae High", new InstantCommand(m_elevatorShift::algae_high, m_elevatorShift));
-		NamedCommands.registerCommand("Angle Reef", new InstantCommand(m_corallator::angleReef, m_corallator)); // these are
-		NamedCommands.registerCommand("Angle Station", new InstantCommand(m_corallator::angleStation, m_corallator)); // all self-
+		NamedCommands.registerCommand("Angle Reef", new InstantCommand(m_corallator::angleReef, m_corallator)); // these
+																												// are
+		NamedCommands.registerCommand("Angle Station", new InstantCommand(m_corallator::angleStation, m_corallator)); // all
+																														// self-
 		NamedCommands.registerCommand("Angle Algae", new InstantCommand(m_corallator::angleAlgae, m_corallator)); // explanatory
 		NamedCommands.registerCommand("Wrist Reset", new WristResetCommand(m_corallator));
 		return AutoBuilder.buildAutoChooser();
@@ -139,6 +147,19 @@ public class RobotContainer {
 	public Command getAutonomousCommand() {
 		return autoChooser.getSelected();
 		// sorry, I deleted all the comments at the request of Keith :O
+	}
 
+	/**
+	 * @param pathName Name of a PathPlanner path definition file.
+	 * @return a Command that will execute the given path.
+	 */
+	private Command fromPathFile(String pathName) {
+		try {
+			PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
+			return AutoBuilder.followPath(path);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Commands.none();
+		}
 	}
 }
