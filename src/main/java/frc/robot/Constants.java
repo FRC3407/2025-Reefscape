@@ -112,8 +112,8 @@ public final class Constants {
     public static final double level_2 = -5.0;
     public static final double level_3 = -35.0;
     public static final double level_4 = -70.0;
-    public static final double d_stop = 0;
-    public static final double coral_s = 0;
+    public static final double d_stop = 10; // this one too !
+    public static final double coral_s = 10; // need to find the right numbers here !
   }
   public static final class CorallatorConstants {
     public static final double corallatorOverheatTemp = 60;
