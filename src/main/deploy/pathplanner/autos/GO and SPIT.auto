@@ -11,16 +11,28 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "GET OUT (of the starting area)"
+                  "pathName": "Go to Reef"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Wrist Reset"
+                  "name": "Raise to L2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Angle Reef"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Spit Out the Coral"
           }
         }
       ]

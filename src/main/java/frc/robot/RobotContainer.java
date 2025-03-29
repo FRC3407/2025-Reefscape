@@ -88,6 +88,7 @@ public class RobotContainer {
 		NamedCommands.registerCommand("Angle Reef", new InstantCommand(m_corallator::angleReef, m_corallator)); // these are
 		NamedCommands.registerCommand("Angle Station", new InstantCommand(m_corallator::angleStation, m_corallator)); // all self-
 		NamedCommands.registerCommand("Angle Algae", new InstantCommand(m_corallator::angleAlgae, m_corallator)); // explanatory
+		NamedCommands.registerCommand("Wrist Reset", new WristResetCommand(m_corallator));
 		return AutoBuilder.buildAutoChooser();
 	}
 

@@ -9,33 +9,35 @@ import frc.robot.subsystems.CorallatorSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class WristResetCommand extends Command {
-  /** Creates a new WristResetCommand. */
-  private final CorallatorSubsystem m_corallatorSubsystem;
-  public WristResetCommand(CorallatorSubsystem corallatorSubsystem) {
-    m_corallatorSubsystem = corallatorSubsystem;
-    addRequirements(corallatorSubsystem);
-    // Use addRequirements() here to declare subsystem dependencies.
-  }
+	/** Creates a new WristResetCommand. */
+	private final CorallatorSubsystem m_corallatorSubsystem;
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-    m_corallatorSubsystem.setManualWristSpeed(-0.4);
-  }
+	public WristResetCommand(CorallatorSubsystem corallatorSubsystem) {
+		m_corallatorSubsystem = corallatorSubsystem;
+		addRequirements(corallatorSubsystem);
+		// Use addRequirements() here to declare subsystem dependencies.
+	}
 
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {}
+	// Called when the command is initially scheduled.
+	@Override
+	public void initialize() {
+		m_corallatorSubsystem.setManualWristSpeed(-0.4);
+	}
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-    m_corallatorSubsystem.angleStation();
-  }
+	// Called every time the scheduler runs while the command is scheduled.
+	@Override
+	public void execute() {
+	}
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return m_corallatorSubsystem.isWristSwitchPressed();
-  }
+	// Called once the command ends or is interrupted.
+	@Override
+	public void end(boolean interrupted) {
+		m_corallatorSubsystem.angleStation();
+	}
+
+	// Returns true when the command should end.
+	@Override
+	public boolean isFinished() {
+		return m_corallatorSubsystem.isWristSwitchPressed();
+	}
 }
