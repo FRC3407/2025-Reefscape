@@ -36,18 +36,18 @@ import com.pathplanner.lib.auto.NamedCommands;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-	// The robot's subsystems
-	private final DriveSubsystem m_robotDrive = new DriveSubsystem();
-	private final CoralElevator m_elevatorShift = new CoralElevator();
-	private final CorallatorSubsystem m_corallator = new CorallatorSubsystem();
-	private final VisionSubsystem m_vision = new VisionSubsystem();
+    // The robot's subsystems
+    private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+    private final CoralElevator m_elevatorShift = new CoralElevator();
+    private final CorallatorSubsystem m_corallator = new CorallatorSubsystem();
+    private final VisionSubsystem m_vision = new VisionSubsystem();
 
-	// The driver's controller
-	CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
-	CommandJoystick l_attack3 = new CommandJoystick(0);
-	CommandJoystick r_attack3 = new CommandJoystick(1);
-	// pathplanner sendable chooser for auto widget i think
-	private final SendableChooser<Command> autoChooser;
+    // The driver's controller
+    CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
+    CommandJoystick l_attack3 = new CommandJoystick(0);
+    CommandJoystick r_attack3 = new CommandJoystick(1);
+    // pathplanner sendable chooser for auto widget i think
+    private final SendableChooser<Command> autoChooser;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -55,10 +55,10 @@ public class RobotContainer {
     public RobotContainer() {
 
         Command autoDropCoralCommand = new GoToReefCommand(m_vision, m_robotDrive)
-        .andThen(new InstantCommand(m_corallator::angleReef))
-        .andThen(new InstantCommand(m_elevatorShift::L2))
-        .andThen(new RunCommand(m_corallator::outtakeCoral).withTimeout(2))
-        .andThen(new InstantCommand(m_corallator::stopCoral));
+            .andThen(new InstantCommand(m_corallator::angleReef))
+            .andThen(new InstantCommand(m_elevatorShift::L2))
+            .andThen(new RunCommand(m_corallator::outtakeCoral).withTimeout(2))
+            .andThen(new InstantCommand(m_corallator::stopCoral));
 
         NamedCommands.registerCommand("autoDropCoralCommand", autoDropCoralCommand);
 
@@ -73,87 +73,103 @@ public class RobotContainer {
 
         // Configure default commands
         m_robotDrive.setDefaultCommand(
-                        // The left stick controls translation of the robot.
-                        // Turning is controlled by the X axis of the right stick.
-                        new RunCommand(
-                                        () -> m_robotDrive.drive(
-                                                        -MathUtil.applyDeadband(
-                                                                        l_attack3.getY() * Math.abs(l_attack3.getY())
-                                                                                        + m_driverController.getLeftY() * OIConstants.kSecondDriverPower,
-                                                                        OIConstants.kDriveDeadband),
-                                                        -MathUtil.applyDeadband(
-                                                                        l_attack3.getX() * Math.abs(l_attack3.getX())
-                                                                                        + m_driverController.getLeftX() * OIConstants.kSecondDriverPower,
-                                                                        OIConstants.kDriveDeadband),
-                                                        -MathUtil.applyDeadband(r_attack3.getX() * Math.abs(r_attack3.getX()),
-                                                                        OIConstants.kDriveDeadband),
-                                                        true),
-                                        m_robotDrive));
-		// build an autochooser. Uses Commands.none() as default option
-		SmartDashboard.putData("Auto Chooser", autoChooser);
-	}
+            // The left stick controls translation of the robot.
+            // Turning is controlled by the X axis of the right stick.
+            new RunCommand(
+                () -> m_robotDrive.drive(
+                    -MathUtil.applyDeadband(
+                        l_attack3.getY() * Math
+                            .abs(l_attack3.getY())
+                            + m_driverController
+                                .getLeftY()
+                                * OIConstants.kSecondDriverPower,
+                        OIConstants.kDriveDeadband),
+                    -MathUtil.applyDeadband(
+                        l_attack3.getX() * Math
+                            .abs(l_attack3.getX())
+                            + m_driverController
+                                .getLeftX()
+                                * OIConstants.kSecondDriverPower,
+                        OIConstants.kDriveDeadband),
+                    -MathUtil.applyDeadband(
+                        r_attack3.getX() * Math
+                            .abs(r_attack3.getX()),
+                        OIConstants.kDriveDeadband),
+                    true),
+                m_robotDrive
+            )
+        );
+        // build an autochooser. Uses Commands.none() as default option
+        SmartDashboard.putData("Auto Chooser", autoChooser);
+    }
 
-	private SendableChooser<Command> getAutoChooser() {
-		NamedCommands.registerCommand("Spit Out the Coral", new CoralEjectCommand(m_corallator));
-		NamedCommands.registerCommand("Eat the Coral", new CoralFeederCommand(m_corallator));
-		NamedCommands.registerCommand("Ready for Intake", new InstantCommand(m_elevatorShift::coral_station, m_elevatorShift));
-		NamedCommands.registerCommand("Lower to L1", new InstantCommand(m_elevatorShift::L1, m_elevatorShift));
-		NamedCommands.registerCommand("Raise to L2", new InstantCommand(m_elevatorShift::L2, m_elevatorShift)); // duplicates but
-		NamedCommands.registerCommand("Low Algae", new InstantCommand(m_elevatorShift::L2, m_elevatorShift)); // who cares ?
-		NamedCommands.registerCommand("High Algae", new InstantCommand(m_elevatorShift::L3, m_elevatorShift));
-		NamedCommands.registerCommand("Angle Reef", new InstantCommand(m_corallator::angleReef, m_corallator)); // these are
-		NamedCommands.registerCommand("Angle Station", new InstantCommand(m_corallator::angleStation, m_corallator)); // all self-
-		NamedCommands.registerCommand("Angle Algae", new InstantCommand(m_corallator::angleAlgae, m_corallator)); // explanatory
-		NamedCommands.registerCommand("Wrist Reset", new WristResetCommand(m_corallator));
-		return AutoBuilder.buildAutoChooser();
-	}
+    private SendableChooser<Command> getAutoChooser() {
+        NamedCommands.registerCommand("Spit Out the Coral", new CoralEjectCommand(m_corallator));
+        NamedCommands.registerCommand("Eat the Coral", new CoralFeederCommand(m_corallator));
+        NamedCommands.registerCommand("Ready for Intake", new InstantCommand(m_elevatorShift::coral_station, m_elevatorShift));
+        NamedCommands.registerCommand("Lower to L1", new InstantCommand(m_elevatorShift::L1, m_elevatorShift));
+        NamedCommands.registerCommand("Raise to L2", new InstantCommand(m_elevatorShift::L2, m_elevatorShift)); // duplicates
+                                                                                                                // but
+        NamedCommands.registerCommand("Low Algae", new InstantCommand(m_elevatorShift::L2, m_elevatorShift)); // who
+                                                                                                              // cares
+                                                                                                              // ?
+        NamedCommands.registerCommand("High Algae", new InstantCommand(m_elevatorShift::L3, m_elevatorShift));
+        NamedCommands.registerCommand("Angle Reef", new InstantCommand(m_corallator::angleReef, m_corallator)); // these
+                                                                                                                // are
+        NamedCommands.registerCommand("Angle Station",
+                new InstantCommand(m_corallator::angleStation, m_corallator)); // all self-
+        NamedCommands.registerCommand("Angle Algae",
+                new InstantCommand(m_corallator::angleAlgae, m_corallator)); // explanatory
+        NamedCommands.registerCommand("Wrist Reset", new WristResetCommand(m_corallator));
+        return AutoBuilder.buildAutoChooser();
+    }
 
-	/**
-	 * Use this method to define your button->command mappings. Buttons can be
-	 * created by
-	 * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its
-	 * subclasses ({@link
-	 * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then calling
-	 * passing it to a
-	 * {@link JoystickButton}.
-	 */
-	private void configureButtonBindings() {
-		r_attack3.button(2).whileTrue(new RunCommand(m_robotDrive::setX));
-		r_attack3.button(7).onTrue(new InstantCommand(m_robotDrive::zeroHeading));
+    /**
+     * Use this method to define your button->command mappings. Buttons can be
+     * created by
+     * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its
+     * subclasses ({@link
+     * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then calling
+     * passing it to a
+     * {@link JoystickButton}.
+     */
+    private void configureButtonBindings() {
+        r_attack3.button(2).whileTrue(new RunCommand(m_robotDrive::setX));
+        r_attack3.button(7).onTrue(new InstantCommand(m_robotDrive::zeroHeading));
 
-		// upa nd down :))
-		m_driverController.povDown().onTrue(new InstantCommand(m_corallator::angleReef));
-		m_driverController.povUp().onTrue(new InstantCommand(m_corallator::angleAlgae));
-		m_driverController.povRight().onTrue(new InstantCommand(m_corallator::angleStation));
+        // upa nd down :))
+        m_driverController.povDown().onTrue(new InstantCommand(m_corallator::angleReef));
+        m_driverController.povUp().onTrue(new InstantCommand(m_corallator::angleAlgae));
+        m_driverController.povRight().onTrue(new InstantCommand(m_corallator::angleStation));
 
-		// intake and outtake
+        // intake and outtake
 
-		m_driverController.rightTrigger()
-				.whileTrue(new StartEndCommand(m_corallator::outtakeCoral, m_corallator::stopCoral));
-		m_driverController.leftTrigger()
-				.whileTrue(new StartEndCommand(m_corallator::intakeCoral, m_corallator::stopCoral));
+        m_driverController.rightTrigger()
+                .whileTrue(new StartEndCommand(m_corallator::outtakeCoral, m_corallator::stopCoral));
+        m_driverController.leftTrigger()
+                .whileTrue(new StartEndCommand(m_corallator::intakeCoral, m_corallator::stopCoral));
 
-		// Stuff to make the gyro reset when pressing the "L2" button
+        // Stuff to make the gyro reset when pressing the "L2" button
 
-		// let's elevate
-		m_driverController.x().onTrue(new InstantCommand(m_elevatorShift::L4));
-		m_driverController.a().onTrue(new InstantCommand(m_elevatorShift::L1));
-		m_driverController.b().onTrue(new InstantCommand(m_elevatorShift::L2));
-		m_driverController.y().onTrue(new InstantCommand(m_elevatorShift::L3));
+        // let's elevate
+        m_driverController.x().onTrue(new InstantCommand(m_elevatorShift::L4));
+        m_driverController.a().onTrue(new InstantCommand(m_elevatorShift::L1));
+        m_driverController.b().onTrue(new InstantCommand(m_elevatorShift::L2));
+        m_driverController.y().onTrue(new InstantCommand(m_elevatorShift::L3));
 
-		m_driverController.rightStick().onTrue(new InstantCommand(m_elevatorShift::D_stop));
+        m_driverController.rightStick().onTrue(new InstantCommand(m_elevatorShift::D_stop));
 
-		m_driverController.leftStick().onTrue(new WristResetCommand(m_corallator));
-		m_driverController.leftBumper().whileTrue(new GoToReefCommand(m_vision, m_robotDrive));
-                // Testing controlls for vision
-                m_driverController.leftBumper().whileTrue(new GoToReefCommand(m_vision, m_robotDrive));
-                m_driverController.rightStick().whileTrue(new DriveDistanceCommand(m_vision, m_robotDrive));
-        
-                m_driverController.rightStick().onTrue(new InstantCommand(m_elevatorShift::D_stop));
-        
-                m_driverController.leftStick().onTrue(new WristResetCommand(m_corallator));
-                m_driverController.leftBumper().whileTrue(new GoToReefCommand(m_vision, m_robotDrive));
-	}
+        m_driverController.leftStick().onTrue(new WristResetCommand(m_corallator));
+        m_driverController.leftBumper().whileTrue(new GoToReefCommand(m_vision, m_robotDrive));
+        // Testing controlls for vision
+        m_driverController.leftBumper().whileTrue(new GoToReefCommand(m_vision, m_robotDrive));
+        m_driverController.rightStick().whileTrue(new DriveDistanceCommand(m_vision, m_robotDrive));
+
+        m_driverController.rightStick().onTrue(new InstantCommand(m_elevatorShift::D_stop));
+
+        m_driverController.leftStick().onTrue(new WristResetCommand(m_corallator));
+        m_driverController.leftBumper().whileTrue(new GoToReefCommand(m_vision, m_robotDrive));
+    }
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
