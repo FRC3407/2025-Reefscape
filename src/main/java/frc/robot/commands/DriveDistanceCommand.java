@@ -58,7 +58,7 @@ public class DriveDistanceCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double speed=0.03;
+    double speed=0.08;
     Pose2d delta=getDelta();
     double x=(Math.abs(delta.getX())<0.001) ? 0.0 : Math.copySign(speed, delta.getX());
     double y=(Math.abs(delta.getY())<0.001) ? 0.0 : Math.copySign(speed, delta.getY());

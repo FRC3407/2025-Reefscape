@@ -28,9 +28,7 @@ public class GoToReefCommand extends Command {
   public static double closeEnoughYDistance = 0.02;
   public static double closeEnoughRotation = 0.1; // about 5.7 degrees
 
-  public static double towardsTagSpeed = 0.1; // TODO: make this a constant later
-
-  public static AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+  public static double towardsTagSpeed = 0.25; // TODO: make this a constant later
 
   public Transform3d lastTargetTransform;
   public boolean useLastTransform = false;
@@ -72,30 +70,34 @@ public class GoToReefCommand extends Command {
       System.out.println("Yaw: " + yaw);
       double rotationSpeed = 0.8;
 
-      double movementX = 0.3*Math.sqrt(towardsTagSpeed * (camToTarget.getX()-closeEnoughXDistance+0.002));
-      double movementY = 1.5 * Math.sqrt(towardsTagSpeed * camToTarget.getY());
+      double movementX = 0.6*(towardsTagSpeed * camToTarget.getX());
+      double movementY = 1.2*(towardsTagSpeed * camToTarget.getY());
 
       System.out.println("move y: "+movementY);
 
       double newYaw = Math.copySign(Math.PI - Math.abs(yaw), yaw);
 
-      if (target.getBestCameraToTarget().getX() < closeEnoughXDistance) {
+      if (camToTarget.getX() < closeEnoughXDistance) {
         movementX = 0;
         movementY *= 3.0;
       }
 
       System.out.println("drivvingg");
-      driveSubsystem.drive(movementX, movementY, -rotationSpeed * newYaw / Math.max(0.5, camToTarget.getX() * 4.0),
-          false);
+      driveSubsystem.drive(
+        movementX,
+        movementY,
+        -rotationSpeed * newYaw / Math.max(0.5, camToTarget.getX() * 4.0),
+        false
+      );
       lastTargetTransform = camToTarget;
       visionSubsystem.lastTransformStash = lastTargetTransform;
       useLastTransform = true;
       // AprilTagFieldLayout.loadFromResource("")
-      lastPose = PhotonUtils.estimateFieldToRobotAprilTag(
-        camToTarget,
-        fieldLayout.getTagPose(target.fiducialId).get(),
-        camToTarget
-      );
+      // lastPose = PhotonUtils.estimateFieldToRobotAprilTag(
+      //   camToTarget,
+      //   fieldLayout.getTagPose(target.fiducialId).get(),
+      //   camToTarget
+      // );
     } else {
       System.out.println("stopping");
       driveSubsystem.drive(0, 0, 0, false);
@@ -129,7 +131,14 @@ public class GoToReefCommand extends Command {
           Math.abs(camToTarget.getY()) < closeEnoughYDistance &&
           Math.abs(newYaw) < closeEnoughRotation) {
         System.out.println("I did it :)");
-        driveSubsystem.resetOdometry(lastPose.toPose2d());
+        // driveSubsystem.resetOdometry(lastPose.toPose2d());
+        return true;
+      }
+      if (Math.sqrt(
+        camToTarget.getX()*camToTarget.getX()+
+        camToTarget.getY()*camToTarget.getY()
+      )<0.6) { // 0.5m is when it starts oscillating, so now we stop
+        System.out.println("I'm closer than 0.6 meters");
         return true;
       }
     }

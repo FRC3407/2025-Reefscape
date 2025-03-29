@@ -54,9 +54,11 @@ public class RobotContainer {
      */
     public RobotContainer() {
 
-        Command autoDropCoralCommand = new GoToReefCommand(m_vision, m_robotDrive)
-            .andThen(new InstantCommand(m_corallator::angleReef))
-            .andThen(new InstantCommand(m_elevatorShift::L2))
+        Command autoDropCoralCommand = new InstantCommand(m_corallator::angleReef)
+            // .andThen(new InstantCommand(m_elevatorShift::L2))
+            .andThen(new GoToReefCommand(m_vision, m_robotDrive))
+            .andThen(new GoToReefCommand(m_vision, m_robotDrive).withTimeout(0.025))
+            .andThen(new DriveDistanceCommand(m_vision, m_robotDrive))
             .andThen(new RunCommand(m_corallator::outtakeCoral).withTimeout(2))
             .andThen(new InstantCommand(m_corallator::stopCoral));
 
