@@ -29,6 +29,7 @@ public class LightsSubsystem extends SubsystemBase {
     public static final int SIDE_STRIPS = 0;
     public static final int PANEL_1 = 1;
     public static final int PANEL_2 = 2;
+    public static final int CIRCLE_STRIP = 3;
 
     // Animations:
     public static final int LADDER_RED = 0;
@@ -65,12 +66,17 @@ public class LightsSubsystem extends SubsystemBase {
 
         if (DriverStation.isDisabled()) {
             setAnimation(SIDE_STRIPS, LADDER_WHITE);
+            setAnimation(CIRCLE_STRIP, MAX_ANIMATIONS);
         } else if (DriverStation.isAutonomous()) {
             setAnimation(SIDE_STRIPS, PULSE_RED);
+            setAnimation(CIRCLE_STRIP, MAX_ANIMATIONS);
         } else if (DriverStation.isTeleop()) {
             setAnimation(SIDE_STRIPS, PULSE_GREEN);
+            setAnimation(CIRCLE_STRIP, LADDER_BLUE);
         } else if (DriverStation.isTest()) {
             setAnimation(SIDE_STRIPS, PULSE_PURPLE);
+            setAnimation(CIRCLE_STRIP, MAX_ANIMATIONS);
+            
         } 
 /* 
         if (DriverStation.isDisabled()) {
