@@ -4,11 +4,16 @@
 
 package frc.robot.commands;
 
-import java.io.Serial;
-
+import org.photonvision.PhotonUtils;
+import org.photonvision.PhotonVersion;
+import org.photonvision.proto.Photon;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.DriveSubsystem;
@@ -22,9 +27,12 @@ public class GoToReefCommand extends Command {
   public static double closeEnoughXDistance = 0.25;
   public static double closeEnoughYDistance = 0.02;
   public static double closeEnoughRotation = 0.1; // about 5.7 degrees
-  public static double towardsTagSpeed = 0.2; // TODO: make this a constant later
+
+  public static double towardsTagSpeed = 0.25; // TODO: make this a constant later
+
   public Transform3d lastTargetTransform;
   public boolean useLastTransform = false;
+  public Pose3d lastPose;
 
   public float timeSinceAprilTagSeen = 0;
 
@@ -56,28 +64,40 @@ public class GoToReefCommand extends Command {
     if (target != null) {
       timeSinceAprilTagSeen = 0;
       Transform3d camToTarget = target.getBestCameraToTarget();
+      camToTarget=camToTarget.plus(new Transform3d(0.34,0,0, new Rotation3d()));
 
       double yaw = camToTarget.getRotation().getZ();
       System.out.println("Yaw: " + yaw);
       double rotationSpeed = 0.8;
 
-      double movementX = 0.3*Math.sqrt(towardsTagSpeed * (camToTarget.getX()-closeEnoughXDistance+0.002));
-      double movementY = 1.5 * Math.sqrt(towardsTagSpeed * camToTarget.getY());
+      double movementX = 0.6*(towardsTagSpeed * camToTarget.getX());
+      double movementY = 1.2*(towardsTagSpeed * camToTarget.getY());
 
       System.out.println("move y: "+movementY);
 
       double newYaw = Math.copySign(Math.PI - Math.abs(yaw), yaw);
 
-      if (target.getBestCameraToTarget().getX() < closeEnoughXDistance) {
+      if (camToTarget.getX() < closeEnoughXDistance) {
         movementX = 0;
         movementY *= 3.0;
       }
 
       System.out.println("drivvingg");
-      driveSubsystem.drive(movementX, movementY, -rotationSpeed * newYaw / Math.max(0.5, camToTarget.getX() * 4.0),
-          false);
+      driveSubsystem.drive(
+        movementX,
+        movementY,
+        -rotationSpeed * newYaw / Math.max(0.5, camToTarget.getX() * 4.0),
+        false
+      );
       lastTargetTransform = camToTarget;
+      visionSubsystem.lastTransformStash = lastTargetTransform;
       useLastTransform = true;
+      // AprilTagFieldLayout.loadFromResource("")
+      // lastPose = PhotonUtils.estimateFieldToRobotAprilTag(
+      //   camToTarget,
+      //   fieldLayout.getTagPose(target.fiducialId).get(),
+      //   camToTarget
+      // );
     } else {
       System.out.println("stopping");
       driveSubsystem.drive(0, 0, 0, false);
@@ -90,6 +110,10 @@ public class GoToReefCommand extends Command {
   public void end(boolean interrupted) {
     driveSubsystem.drive(0, 0, 0, false);
     System.out.println("goto april tag ended. int: " + interrupted);
+    System.out.println("last target transform: " + lastTargetTransform);
+    if (!interrupted) {
+      
+    }
   }
 
   // Returns true when the command should end.
@@ -107,10 +131,18 @@ public class GoToReefCommand extends Command {
           Math.abs(camToTarget.getY()) < closeEnoughYDistance &&
           Math.abs(newYaw) < closeEnoughRotation) {
         System.out.println("I did it :)");
+        // driveSubsystem.resetOdometry(lastPose.toPose2d());
+        return true;
+      }
+      if (Math.sqrt(
+        camToTarget.getX()*camToTarget.getX()+
+        camToTarget.getY()*camToTarget.getY()
+      )<0.6) { // 0.5m is when it starts oscillating, so now we stop
+        System.out.println("I'm closer than 0.6 meters");
         return true;
       }
     }
-    if (timeSinceAprilTagSeen >= 1.0) {
+    if (timeSinceAprilTagSeen >= 0.3) {
       System.out.println("I can't find it :(");
       return true;
     }
