@@ -21,7 +21,10 @@ import edu.wpi.first.wpilibj.PS4Controller.Button;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.AprilTagLookCommand;
+import frc.robot.commands.GoToReefCommand;
 import frc.robot.commands.TurnToAngleCommand;
+import frc.robot.commands.ScoreCommand;
 import frc.robot.subsystems.CoralElevator;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -36,6 +39,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import java.util.List;
 import frc.robot.subsystems.CorallatorSubsystem;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -61,6 +65,13 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+    // Subsystem initialization
+    // CorallatorSubsystem = new CorallatorSubsystem();
+
+    NamedCommands.registerCommand("GoToReef", new GoToReefCommand(m_vision, m_robotDrive));
+    NamedCommands.registerCommand("Score", new ScoreCommand(m_Corallator));
+
+
     // Configure the button bindings
     configureButtonBindings();
 
