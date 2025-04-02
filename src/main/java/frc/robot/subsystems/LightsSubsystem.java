@@ -38,6 +38,9 @@ public class LightsSubsystem extends SubsystemBase {
     public static final int PULSE_GREEN = 3;
     public static final int PULSE_RED = 4;
     public static final int PULSE_PURPLE = 5;
+    public static final int FISH_EATING = 6;
+    public static final int LITTLE_FISH = 7;
+    public static final int BIG_FISH = 8;
 
     private AnimationState[] currentAnimation = new AnimationState[MAX_STRIPS];
     private AnimationState[] nextAnimation = new AnimationState[MAX_STRIPS];
@@ -64,41 +67,40 @@ public class LightsSubsystem extends SubsystemBase {
         // TODO: monitor internal robot state and change animations as necessary
         // using setAnimation or clearAllAnimations
 
-        if (DriverStation.isDisabled()) {
+        if (DriverStation.isDisabled() || DriverStation.isTest()) {
             setAnimation(SIDE_STRIPS, LADDER_WHITE);
             setAnimation(CIRCLE_STRIP, MAX_ANIMATIONS);
+            setAnimation(PANEL_1, FISH_EATING);
+            setAnimation(PANEL_2, LITTLE_FISH);
+
         } else if (DriverStation.isAutonomous()) {
             setAnimation(SIDE_STRIPS, PULSE_RED);
             setAnimation(CIRCLE_STRIP, MAX_ANIMATIONS);
+            setAnimation(PANEL_1, MAX_ANIMATIONS);
+            setAnimation(PANEL_2, MAX_ANIMATIONS);
+
         } else if (DriverStation.isTeleop()) {
-            setAnimation(SIDE_STRIPS, PULSE_GREEN);
-            setAnimation(CIRCLE_STRIP, LADDER_BLUE);
-        } else if (DriverStation.isTest()) {
-            setAnimation(SIDE_STRIPS, PULSE_PURPLE);
-            setAnimation(CIRCLE_STRIP, MAX_ANIMATIONS);
-            
-        } 
-/* 
-        if (DriverStation.isDisabled()) {
-            setAnimation(SIDE_STRIPS, PULSE_PURPLE);
-        } else if (m_Corallator.isCorallatorTooHot()) {
-            setAnimation(SIDE_STRIPS, PULSE_RED);
-        } else if (m_Corallator.hasCoral()) {
-            setAnimation(SIDE_STRIPS, PULSE_GREEN);
-        } else {
-            setAnimation(SIDE_STRIPS, LADDER_WHITE);
+            if (m_Corallator.isCorallatorTooHot()) {
+                setAnimation(SIDE_STRIPS, PULSE_RED);
+            } else if (m_Corallator.hasCoral()) {
+                setAnimation(SIDE_STRIPS, PULSE_GREEN);
+            } else {
+                setAnimation(SIDE_STRIPS, PULSE_PURPLE);
+            }
+            if (m_Corallator.hasCoral()) {
+                setAnimation(CIRCLE_STRIP, PULSE_GREEN);
+            } else {
+                setAnimation(CIRCLE_STRIP, PULSE_PURPLE);
+            }
+            if (m_Corallator.hasCoral()) {
+                setAnimation(PANEL_1, PULSE_GREEN);
+                setAnimation(PANEL_2, PULSE_GREEN);
+            } else {
+                setAnimation(PANEL_1, FISH_EATING);
+                setAnimation(PANEL_2, LITTLE_FISH);
+            }
         }
 
-        if (DriverStation.isDisabled()) {
-            // Display Fish animation on front panel
-        } else if (DriverStation.isAutonomous()) {
-            // Display zooming animation on front panel
-        } else if (DriverStation.isTeleop() && m_vision.cameraSeesTargets()) {
-            // Display something
-        } else {
-            // Display something else
-        }
-*/
         sendAllAnimations();
     }
 
@@ -113,13 +115,6 @@ public class LightsSubsystem extends SubsystemBase {
             nextAnimation[s].param = null;
         }
     }
-
-    /*
-     * protected void setAnimation(int stripNumber, int animNumber, String param) {
-     * nextAnimation[stripNumber].animNumber = animNumber;
-     * nextAnimation[stripNumber].param = param;
-     * }
-     */
 
     /**
      * Set one strip to have the numbered animation.
@@ -161,7 +156,6 @@ public class LightsSubsystem extends SubsystemBase {
         int animNumber = nextAnimation[stripNumber].animNumber;
         Integer b = Integer.valueOf(((stripNumber << 5) & 0xE0) | (animNumber & 0x1F));
         dataOut[dataLength++] = b.byteValue();
-System.out.println("::: sendOneAnimation(" + stripNumber + "," + animNumber + ") ");
 
         if (nextAnimation[stripNumber].param != null && nextAnimation[stripNumber].param.length() > 0) {
             for (int i = 0; i < nextAnimation[stripNumber].param.length() && i < MAX_PARAM; i++) {
