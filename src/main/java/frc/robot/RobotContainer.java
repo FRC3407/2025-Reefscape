@@ -19,6 +19,7 @@ import frc.robot.subsystems.CoralElevator;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -28,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.CorallatorSubsystem;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -54,20 +56,9 @@ public class RobotContainer {
      */
     public RobotContainer() {
 
-        Command autoDropCoralCommand = new InstantCommand(m_corallator::angleReef)
-            // .andThen(new InstantCommand(m_elevatorShift::L2))
-            .andThen(new GoToReefCommand(m_vision, m_robotDrive))
-            .andThen(new GoToReefCommand(m_vision, m_robotDrive).withTimeout(0.025))
-            .andThen(new DriveDistanceCommand(m_vision, m_robotDrive))
-            .andThen(new RunCommand(m_corallator::outtakeCoral).withTimeout(2))
-            .andThen(new InstantCommand(m_corallator::stopCoral));
-
-        NamedCommands.registerCommand("autoDropCoralCommand", autoDropCoralCommand);
-
+	
         // autoChooser = AutoBuilder.buildAutoChooser();
         autoChooser = getAutoChooser();
-
-        autoChooser.addOption("auto drop coral", autoDropCoralCommand);
 
         SmartDashboard.putData("Auto Chooser", autoChooser);
         // Configure the button bindings
@@ -106,25 +97,30 @@ public class RobotContainer {
     }
 
     private SendableChooser<Command> getAutoChooser() {
-        NamedCommands.registerCommand("Spit Out the Coral", new CoralEjectCommand(m_corallator));
-        NamedCommands.registerCommand("Eat the Coral", new CoralFeederCommand(m_corallator));
-        NamedCommands.registerCommand("Ready for Intake", new InstantCommand(m_elevatorShift::coral_station, m_elevatorShift));
-        NamedCommands.registerCommand("Lower to L1", new InstantCommand(m_elevatorShift::L1, m_elevatorShift));
-        NamedCommands.registerCommand("Raise to L2", new InstantCommand(m_elevatorShift::L2, m_elevatorShift)); // duplicates
-                                                                                                                // but
-        NamedCommands.registerCommand("Low Algae", new InstantCommand(m_elevatorShift::L2, m_elevatorShift)); // who
-                                                                                                              // cares
-                                                                                                              // ?
-        NamedCommands.registerCommand("High Algae", new InstantCommand(m_elevatorShift::L3, m_elevatorShift));
-        NamedCommands.registerCommand("Angle Reef", new InstantCommand(m_corallator::angleReef, m_corallator)); // these
-                                                                                                                // are
-        NamedCommands.registerCommand("Angle Station",
-                new InstantCommand(m_corallator::angleStation, m_corallator)); // all self-
-        NamedCommands.registerCommand("Angle Algae",
-                new InstantCommand(m_corallator::angleAlgae, m_corallator)); // explanatory
-        NamedCommands.registerCommand("Wrist Reset", new WristResetCommand(m_corallator));
-        return AutoBuilder.buildAutoChooser();
-    }
+
+        Command autoDropCoralCommand = new InstantCommand(m_corallator::angleReef)
+            // .andThen(new InstantCommand(m_elevatorShift::L2))
+            .andThen(new GoToReefCommand(m_vision, m_robotDrive))
+            .andThen(new GoToReefCommand(m_vision, m_robotDrive).withTimeout(0.025))
+            .andThen(new DriveDistanceCommand(m_vision, m_robotDrive))
+            .andThen(new RunCommand(m_corallator::outtakeCoral).withTimeout(2))
+            .andThen(new InstantCommand(m_corallator::stopCoral));
+
+        NamedCommands.registerCommand("Vision and drop coral", autoDropCoralCommand);
+
+		NamedCommands.registerCommand("Spit Out the Coral", new CoralEjectCommand(m_corallator));
+		NamedCommands.registerCommand("Eat the Coral", new CoralFeederCommand(m_corallator));
+		NamedCommands.registerCommand("Ready for Intake", new InstantCommand(m_elevatorShift::coral_station, m_elevatorShift));
+		NamedCommands.registerCommand("Coral Low", new InstantCommand(m_elevatorShift::coral_low, m_elevatorShift));
+		NamedCommands.registerCommand("Coral High", new InstantCommand(m_elevatorShift::coral_high, m_elevatorShift)); // duplicates
+		NamedCommands.registerCommand("Algae Low", new InstantCommand(m_elevatorShift::algae_low, m_elevatorShift)); // but who cares ?
+		NamedCommands.registerCommand("Algae High", new InstantCommand(m_elevatorShift::algae_high, m_elevatorShift));
+		NamedCommands.registerCommand("Angle Reef", new InstantCommand(m_corallator::angleReef, m_corallator)); // these are 
+		NamedCommands.registerCommand("Angle Station", new InstantCommand(m_corallator::angleStation, m_corallator)); // all self-
+		NamedCommands.registerCommand("Angle Algae", new InstantCommand(m_corallator::angleAlgae, m_corallator)); // explanatory
+		NamedCommands.registerCommand("Wrist Reset", new WristResetCommand(m_corallator));
+		return AutoBuilder.buildAutoChooser();
+	}
 
     /**
      * Use this method to define your button->command mappings. Buttons can be
@@ -138,6 +134,11 @@ public class RobotContainer {
     private void configureButtonBindings() {
         r_attack3.button(2).whileTrue(new RunCommand(m_robotDrive::setX));
         r_attack3.button(7).onTrue(new InstantCommand(m_robotDrive::zeroHeading));
+		// let's elevate
+		m_driverController.a().onTrue(new InstantCommand(m_elevatorShift::coral_low));
+		m_driverController.b().onTrue(new InstantCommand(m_elevatorShift::algae_low));
+		m_driverController.x().onTrue(new InstantCommand(m_elevatorShift::algae_high));
+		m_driverController.y().onTrue(new InstantCommand(m_elevatorShift::coral_high));
 
         // upa nd down :))
         m_driverController.povDown().onTrue(new InstantCommand(m_corallator::angleReef));
@@ -152,25 +153,13 @@ public class RobotContainer {
                 .whileTrue(new StartEndCommand(m_corallator::intakeCoral, m_corallator::stopCoral));
 
         // Stuff to make the gyro reset when pressing the "L2" button
-
-        // let's elevate
-        m_driverController.x().onTrue(new InstantCommand(m_elevatorShift::L4));
-        m_driverController.a().onTrue(new InstantCommand(m_elevatorShift::L1));
-        m_driverController.b().onTrue(new InstantCommand(m_elevatorShift::L2));
-        m_driverController.y().onTrue(new InstantCommand(m_elevatorShift::L3));
+        m_driverController.leftStick().onTrue(new WristResetCommand(m_corallator));
 
         m_driverController.rightStick().onTrue(new InstantCommand(m_elevatorShift::D_stop));
 
-        m_driverController.leftStick().onTrue(new WristResetCommand(m_corallator));
         m_driverController.leftBumper().whileTrue(new GoToReefCommand(m_vision, m_robotDrive));
-        // Testing controlls for vision
-        m_driverController.leftBumper().whileTrue(new GoToReefCommand(m_vision, m_robotDrive));
-        m_driverController.rightStick().whileTrue(new DriveDistanceCommand(m_vision, m_robotDrive));
 
-        m_driverController.rightStick().onTrue(new InstantCommand(m_elevatorShift::D_stop));
 
-        m_driverController.leftStick().onTrue(new WristResetCommand(m_corallator));
-        m_driverController.leftBumper().whileTrue(new GoToReefCommand(m_vision, m_robotDrive));
     }
 
     /**
@@ -182,4 +171,18 @@ public class RobotContainer {
         return autoChooser.getSelected();
 
     }
+
+	/**
+	 * @param pathName Name of a PathPlanner path definition file.
+	 * @return a Command that will execute the given path.
+	 */
+	private Command fromPathFile(String pathName) {
+		try {
+			PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
+			return AutoBuilder.followPath(path);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Commands.none();
+		}
+	}
 }

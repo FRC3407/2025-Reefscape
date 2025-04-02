@@ -11,13 +11,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Go to Reef"
+                  "pathName": "Go to Reef R"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Raise to L2"
+                  "name": "Coral Low"
                 }
               },
               {
@@ -79,7 +79,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Raise to L2"
+                  "name": "Coral Low"
                 }
               },
               {

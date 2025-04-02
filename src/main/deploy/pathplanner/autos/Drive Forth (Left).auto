@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Wrist Reset"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -12,12 +18,6 @@
                 "type": "path",
                 "data": {
                   "pathName": "GET OUT (of the starting area)"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Wrist Reset"
                 }
               }
             ]
