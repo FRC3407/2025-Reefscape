@@ -15,6 +15,7 @@ import frc.robot.commands.CoralFeederCommand;
 import frc.robot.commands.GoToReefCommand;
 import frc.robot.subsystems.CoralElevator;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.LightsSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -36,11 +37,13 @@ import com.pathplanner.lib.path.PathPlannerPath;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+
 	// The robot's subsystems
 	private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 	private final CoralElevator m_elevatorShift = new CoralElevator();
 	private final CorallatorSubsystem m_corallator = new CorallatorSubsystem();
 	private final VisionSubsystem m_vision = new VisionSubsystem();
+	private final LightsSubsystem m_lightsSubsystem = new LightsSubsystem(m_corallator, m_vision);
 
 	// The driver's controller
 	CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
