@@ -149,7 +149,7 @@ public class LightsSubsystem extends SubsystemBase {
      * Send out one message on I2C to change the animation on one strip to be one
      * specific animation. The {@code stripNumber} and {@code animNumber} are packed
      * into a single byte. If there is a {@code param} associated with this change,
-     * it is concatentated onto the message.
+     * it is concatenated onto the message.
      */
     private void sendOneAnimation(int stripNumber) {
         int dataLength = 0;
