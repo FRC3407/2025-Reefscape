@@ -43,7 +43,6 @@ public class CorallatorSubsystem extends SubsystemBase {
     public void angleReef() {
         setPoint = targetAngleCoralReef;
         enablePID = true;
-
     }
 
     public void angleAlgae() {
@@ -63,7 +62,7 @@ public class CorallatorSubsystem extends SubsystemBase {
         m_corallator.set(-flingerSpeed);
     }
 
-    private boolean hasCoral() {
+    public boolean hasCoral() {
         return m_limitSwitch.isPressed();
     }
 

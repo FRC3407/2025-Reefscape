@@ -108,12 +108,12 @@ public final class Constants {
     public static final double P_value = 0.01;
     public static final double I_value = 0;
     public static final double D_value = 0;
-    public static final double level_1 = 0; //stopped here when adding variable for the height of each level
-    public static final double level_2 = -5.0;
-    public static final double level_3 = -35.0;
-    public static final double level_4 = -70.0;
-    public static final double d_stop = 0;
-    public static final double coral_s = 0;
+    public static final double L1 = 0; //stopped here when adding variable for the height of each level
+    public static final double L2 = -5.0;
+    public static final double L3 = -35.0;
+    public static final double L4 = -70.0;
+    public static final double d_stop = 10; // this one too !
+    public static final double coral_s = 10; // need to find the right numbers here !
   }
   public static final class CorallatorConstants {
     public static final double corallatorOverheatTemp = 60;

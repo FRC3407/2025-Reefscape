@@ -8,20 +8,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CorallatorSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class WristResetCommand extends Command {
-	/** Creates a new WristResetCommand. */
-	private final CorallatorSubsystem m_corallatorSubsystem;
+public class CoralFeederCommand extends Command {
+	/** Creates a new CoralFeederCommand. */
+	private final CorallatorSubsystem m_corallator;
 
-	public WristResetCommand(CorallatorSubsystem corallatorSubsystem) {
-		m_corallatorSubsystem = corallatorSubsystem;
-		addRequirements(corallatorSubsystem);
-		// Use addRequirements() here to declare subsystem dependencies.
+	public CoralFeederCommand(CorallatorSubsystem corallatorSubsystem) {
+		m_corallator = corallatorSubsystem;
 	}
 
 	// Called when the command is initially scheduled.
 	@Override
 	public void initialize() {
-		m_corallatorSubsystem.setManualWristSpeed(-0.4);
+		m_corallator.intakeCoral();
 	}
 
 	// Called every time the scheduler runs while the command is scheduled.
@@ -32,12 +30,12 @@ public class WristResetCommand extends Command {
 	// Called once the command ends or is interrupted.
 	@Override
 	public void end(boolean interrupted) {
-		m_corallatorSubsystem.angleStation();
+		m_corallator.stopCoral();
 	}
 
 	// Returns true when the command should end.
 	@Override
 	public boolean isFinished() {
-		return m_corallatorSubsystem.isWristSwitchPressed();
+		return m_corallator.hasCoral();
 	}
 }
