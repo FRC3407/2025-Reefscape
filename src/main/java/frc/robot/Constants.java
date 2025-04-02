@@ -108,7 +108,7 @@ public final class Constants {
     public static final double P_value = 0.01;
     public static final double I_value = 0;
     public static final double D_value = 0;
-    public static final double L1 = 0; //stopped here when adding variable for the height of each level
+    public static final double L1 = 20; //stopped here when adding variable for the height of each level
     public static final double L2 = -5.0;
     public static final double L3 = -35.0;
     public static final double L4 = -70.0;
