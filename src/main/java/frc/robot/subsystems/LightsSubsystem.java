@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class LightsSubsystem extends SubsystemBase {
 
     public static final int MAX_ANIMATIONS = 20; // Must be 32 or less
-    public static final int MAX_STRIPS = 3; // Must be 8 or less
+    public static final int MAX_STRIPS = 4; // Must be 8 or less
     public static int I2C_ADDRESS = 0x41;
     private static int MAX_PARAM = 64;
 
