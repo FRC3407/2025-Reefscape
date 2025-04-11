@@ -5,28 +5,34 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Wrist Reset"
+            "pathName": "Go to Reef M"
           }
         },
         {
-          "type": "parallel",
+          "type": "sequential",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "GET OUT (of the starting area)"
+                  "name": "Wrist Reset"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Spit Out the Coral"
+                  "name": "Angle Reef"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Spit Out the Coral"
           }
         }
       ]
