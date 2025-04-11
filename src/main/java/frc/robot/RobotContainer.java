@@ -5,6 +5,10 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -28,8 +32,12 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.CorallatorSubsystem;
+
+import org.photonvision.targeting.PhotonTrackedTarget;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 /*
@@ -105,24 +113,47 @@ public class RobotContainer {
                 .andThen(new RunCommand(m_corallator::outtakeCoral).withTimeout(2))
                 .andThen(new InstantCommand(m_corallator::stopCoral));
 
-        NamedCommands.registerCommand("Vision and drop coral", autoDropCoralCommand);
+        Pose2d targetPose = null;
+        PhotonTrackedTarget target = m_vision.getATarget();
+        if (target != null) {
+            Transform3d camToTarget = target.getBestCameraToTarget();
+            targetPose = m_robotDrive.getPose().transformBy(new Transform2d(camToTarget.getX(),
+                    camToTarget.getY(), new Rotation2d(0)));
+        }
 
+        PathConstraints constraints = new PathConstraints(
+                3.0, 4.0,
+                10, 12);
+        Command pathVisionCommand = AutoBuilder.pathfindToPose(
+                targetPose,
+                constraints,
+                0.0 
+        );
+
+        NamedCommands.registerCommand("Vision and drop coral", autoDropCoralCommand);
+        NamedCommands.registerCommand("PathVision Auto", pathVisionCommand);
         NamedCommands.registerCommand("Spit Out the Coral", new CoralEjectCommand(m_corallator));
         NamedCommands.registerCommand("Eat the Coral", new CoralFeederCommand(m_corallator));
         NamedCommands.registerCommand("Ready for Intake",
                 new InstantCommand(m_elevatorShift::coral_station, m_elevatorShift));
-        NamedCommands.registerCommand("Coral Low", new InstantCommand(m_elevatorShift::coral_low, m_elevatorShift));
-        NamedCommands.registerCommand("Coral High", new InstantCommand(m_elevatorShift::coral_high, m_elevatorShift)); // duplicates
-        NamedCommands.registerCommand("Algae Low", new InstantCommand(m_elevatorShift::algae_low, m_elevatorShift)); // but
-                                                                                                                     // who
-                                                                                                                     // cares
-                                                                                                                     // ?
-        NamedCommands.registerCommand("Algae High", new InstantCommand(m_elevatorShift::algae_high, m_elevatorShift));
+        NamedCommands.registerCommand("Coral Low",
+                new InstantCommand(m_elevatorShift::coral_low, m_elevatorShift));
+        NamedCommands.registerCommand("Coral High",
+                new InstantCommand(m_elevatorShift::coral_high, m_elevatorShift)); // duplicates
+        NamedCommands.registerCommand("Algae Low",
+                new InstantCommand(m_elevatorShift::algae_low, m_elevatorShift)); // but
+                                                                                  // who
+                                                                                  // cares
+                                                                                  // ?
+        NamedCommands.registerCommand("Algae High",
+                new InstantCommand(m_elevatorShift::algae_high, m_elevatorShift));
         NamedCommands.registerCommand("Angle Reef", new InstantCommand(m_corallator::angleReef, m_corallator)); // these
                                                                                                                 // are
-        NamedCommands.registerCommand("Angle Station", new InstantCommand(m_corallator::angleStation, m_corallator)); // all
-                                                                                                                      // self-
-        NamedCommands.registerCommand("Angle Algae", new InstantCommand(m_corallator::angleAlgae, m_corallator)); // explanatory
+        NamedCommands.registerCommand("Angle Station",
+                new InstantCommand(m_corallator::angleStation, m_corallator)); // all
+                                                                               // self-
+        NamedCommands.registerCommand("Angle Algae",
+                new InstantCommand(m_corallator::angleAlgae, m_corallator)); // explanatory
         NamedCommands.registerCommand("Wrist Reset", new WristResetCommand(m_corallator));
         return AutoBuilder.buildAutoChooser();
     }
