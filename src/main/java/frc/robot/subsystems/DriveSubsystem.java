@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.Optional;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -21,14 +23,14 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.ADIS16470_IMU;
-import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants;
-import frc.robot.Constants.AutoConstants;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class DriveSubsystem extends SubsystemBase {
   // Create MAXSwerveModules
@@ -67,6 +69,12 @@ public class DriveSubsystem extends SubsystemBase {
       });
   //config variable for pathplanner
   RobotConfig config;
+
+  /** SmartDashboard widget for displaying robot location. */
+  private Field2d odometryDisplay = new Field2d();
+
+  /** Logger for putting robot location into AdvantageScope. */
+  private final StructPublisher<Pose2d> odometryLogger;
   
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
@@ -89,7 +97,7 @@ public class DriveSubsystem extends SubsystemBase {
       ),
       config,
       () -> {
-        var alliance = DriverStation.getAlliance();
+        Optional<Alliance> alliance = DriverStation.getAlliance();
         if (alliance.isPresent()){
           return alliance.get() == DriverStation.Alliance.Red;
         }
@@ -98,6 +106,9 @@ public class DriveSubsystem extends SubsystemBase {
       },
       this
     ); 
+
+    SmartDashboard.putData("Field", odometryDisplay);
+    odometryLogger = NetworkTableInstance.getDefault().getStructTopic("Odometry", Pose2d.struct).publish();
   }
 
   @Override
@@ -114,7 +125,16 @@ public class DriveSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("Gyro Angle", getHeading());
     
+    odometryDisplay.setRobotPose(m_odometry.update(
+        Rotation2d.fromDegrees(-m_gyro.getAngle()),
+        new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_rearLeft.getPosition(),
+            m_rearRight.getPosition()
+        }));
 
+    odometryLogger.set(getPose());
   }
 
   /**
@@ -158,7 +178,7 @@ public class DriveSubsystem extends SubsystemBase {
     double ySpeedDelivered = ySpeed * DriveConstants.kMaxSpeedMetersPerSecond;
     double rotDelivered = rot * DriveConstants.kMaxAngularSpeed;
 
-    var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
+    SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
         fieldRelative
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
                 Rotation2d.fromDegrees(-m_gyro.getAngle()))
