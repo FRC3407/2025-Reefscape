@@ -43,7 +43,7 @@ public class RobotContainer {
 	private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 	private final CoralElevator m_elevatorShift = new CoralElevator();
 	private final CorallatorSubsystem m_corallator = new CorallatorSubsystem();
-	private final VisionSubsystem m_vision = new VisionSubsystem();
+	private final VisionSubsystem m_vision = new VisionSubsystem(m_robotDrive);
 	private final LightsSubsystem m_lightsSubsystem = new LightsSubsystem(m_corallator, m_vision);
 
 	// The driver's controller
