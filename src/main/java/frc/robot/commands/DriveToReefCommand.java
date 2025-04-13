@@ -9,6 +9,9 @@ import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
+/**
+ * Command to drive up to the coral reef.
+ */
 public class DriveToReefCommand extends DriveToPoseCommand {
 
     public final VisionSubsystem visionSubsystem;
@@ -26,7 +29,7 @@ public class DriveToReefCommand extends DriveToPoseCommand {
     }
 
     @Override
-    protected Pose2d getGoalPose() {
+    protected Pose2d makeTargetPose() {
         PhotonTrackedTarget target = getBestTarget();
         if (target != null) {
             Transform2d camToTarget = toTransform2d(target.getBestCameraToTarget());
@@ -42,6 +45,7 @@ public class DriveToReefCommand extends DriveToPoseCommand {
         return new Transform2d(t3d.getTranslation().toTranslation2d(), t3d.getRotation().toRotation2d());
     }
 
+    /** Designates either the left or right branch on the coral reef. */
     public static enum ReefOffset {
         LEFT(0.050, -0.017),
         RIGHT(0.050, 0.017),

@@ -34,7 +34,7 @@ abstract public class DriveToPoseCommand extends Command {
 
     protected final DriveSubsystem driveSubsystem;
 
-    protected Pose2d goalPose;
+    protected Pose2d targetPose;
     protected DriveFeedforwards feedforwards = null;
 
     public DriveToPoseCommand(DriveSubsystem driveSubsystem) {
@@ -47,11 +47,11 @@ abstract public class DriveToPoseCommand extends Command {
      * 
      * @return goal pose for this command or {@code null}.
      */
-    abstract protected Pose2d getGoalPose();
+    abstract protected Pose2d makeTargetPose();
 
     @Override
     public void initialize() {
-        goalPose = getGoalPose();
+        targetPose = makeTargetPose();
         xPidController.setGoal(0.0);
         yPidController.setGoal(0.0);
         headingPidController.setGoal(0.0);
@@ -59,12 +59,12 @@ abstract public class DriveToPoseCommand extends Command {
 
     @Override
     public void execute() {
-        if (goalPose != null) {
-            Transform2d toGoal = goalPose.minus(driveSubsystem.getPose());
+        if (targetPose != null) {
+            Transform2d toTarget = targetPose.minus(driveSubsystem.getPose());
             ChassisSpeeds speeds = new ChassisSpeeds(
-                    xPidController.calculate(-toGoal.getX()),
-                    yPidController.calculate(-toGoal.getY()),
-                    headingPidController.calculate(-toGoal.getRotation().getRadians()));
+                    xPidController.calculate(-toTarget.getX()),
+                    yPidController.calculate(-toTarget.getY()),
+                    headingPidController.calculate(-toTarget.getRotation().getRadians()));
             driveSubsystem.driveRobotRelative(speeds, feedforwards);
         }
     }
@@ -72,16 +72,16 @@ abstract public class DriveToPoseCommand extends Command {
     @Override
     public void end(boolean interrupted) {
         driveSubsystem.drive(0, 0, 0, false);
-        goalPose = null;
+        targetPose = null;
     }
 
     @Override
     public boolean isFinished() {
-        if (goalPose != null) {
-            Pose2d relativePose = driveSubsystem.getPose().relativeTo(goalPose);
-            double distanceToGoal = relativePose.getTranslation().getNorm();
+        if (targetPose != null) {
+            Pose2d relativePose = driveSubsystem.getPose().relativeTo(targetPose);
+            double distanceToTarget = relativePose.getTranslation().getNorm();
             double diffToAngle = Math.abs(relativePose.getRotation().getRadians());
-            return distanceToGoal <= CLOSE_DISTANCE && diffToAngle <= CLOSE_ANGLE;
+            return distanceToTarget <= CLOSE_DISTANCE && diffToAngle <= CLOSE_ANGLE;
         } else {
             return true;
         }
