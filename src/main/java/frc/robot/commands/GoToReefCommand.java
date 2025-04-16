@@ -68,7 +68,7 @@ public class GoToReefCommand extends Command {
       Transform3d camToTarget = target.getBestCameraToTarget();
 
       // add an offset
-      // x=0.38 is how far away the camera needs to be
+      // x=0.38 is how far away the camera needs to be from the reef
       // y=-0.04 is left (i think)
       // subtract around 0.37 from y to go to the left side of the reef
       camToTarget=camToTarget.plus(new Transform3d(0.38,-0.04,0, new Rotation3d()));
