@@ -50,7 +50,7 @@ public class CoralElevator extends SubsystemBase {
 
 	/** Go to lower coral height (L1) */
 	public void coral_low() {
-		set_position(L1);
+		get_position(L1);
 	} // these are all methods
 
 	/** Go to higher coral height (L3) */
