@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -18,6 +19,9 @@ public class DriveDistanceCommand extends Command {
   public final VisionSubsystem m_vision;
 
   public static double distanceThreshold = 0.005;
+
+  public PIDController pidX = new PIDController(0.9, 0.1, 0);
+  public PIDController pidY = new PIDController(0.9, 0.1, 0);
 
   public double moveX;
   public double moveY;
@@ -60,8 +64,9 @@ public class DriveDistanceCommand extends Command {
   public void execute() {
     double speed=0.08;
     Pose2d delta=getDelta();
-    double x=(Math.abs(delta.getX())<0.001) ? 0.0 : Math.copySign(speed, delta.getX());
-    double y=(Math.abs(delta.getY())<0.001) ? 0.0 : Math.copySign(speed, delta.getY());
+    
+    double x=pidX.calculate(-delta.getX(),0);
+    double y=pidY.calculate(-delta.getY(),0);
     System.out.println("im movin x=" + x + " y=" + y);
     m_robotDrive.drive(
       x, 
