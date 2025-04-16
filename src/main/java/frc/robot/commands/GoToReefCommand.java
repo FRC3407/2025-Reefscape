@@ -30,6 +30,8 @@ public class GoToReefCommand extends Command {
 
   public static double towardsTagSpeed = 0.25; // TODO: make this a constant later
 
+  public static double globalSpeedMult = 1.75;
+
   public Transform3d lastTargetTransform;
   public boolean useLastTransform = false;
   public Pose3d lastPose;
@@ -64,14 +66,19 @@ public class GoToReefCommand extends Command {
     if (target != null) {
       timeSinceAprilTagSeen = 0;
       Transform3d camToTarget = target.getBestCameraToTarget();
-      camToTarget=camToTarget.plus(new Transform3d(0.34,0,0, new Rotation3d()));
+
+      // add an offset
+      // x=0.38 is how far away the camera needs to be
+      // y=-0.04 is left (i think)
+      // subtract around 0.37 from y to go to the left side of the reef
+      camToTarget=camToTarget.plus(new Transform3d(0.38,-0.04,0, new Rotation3d()));
 
       double yaw = camToTarget.getRotation().getZ();
       System.out.println("Yaw: " + yaw);
-      double rotationSpeed = 0.8;
+      double rotationSpeed = 1.6;
 
       double movementX = 0.6*(towardsTagSpeed * camToTarget.getX());
-      double movementY = 1.2*(towardsTagSpeed * camToTarget.getY());
+      double movementY = 1.5*(towardsTagSpeed * camToTarget.getY());
 
       System.out.println("move y: "+movementY);
 
@@ -84,8 +91,8 @@ public class GoToReefCommand extends Command {
 
       System.out.println("drivvingg");
       driveSubsystem.drive(
-        movementX,
-        movementY,
+        movementX*globalSpeedMult,
+        movementY*globalSpeedMult,
         -rotationSpeed * newYaw / Math.max(0.5, camToTarget.getX() * 4.0),
         false
       );

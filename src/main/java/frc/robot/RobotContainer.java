@@ -162,7 +162,8 @@ public class RobotContainer {
 
         m_driverController.rightStick().onTrue(new InstantCommand(m_elevatorShift::D_stop));
 
-        m_driverController.leftBumper().whileTrue(new GoToReefCommand(m_vision, m_robotDrive));
+        m_driverController.leftBumper().whileTrue(
+                new GoToReefCommand(m_vision, m_robotDrive).andThen(new DriveDistanceCommand(m_vision, m_robotDrive)));
 
     }
 
