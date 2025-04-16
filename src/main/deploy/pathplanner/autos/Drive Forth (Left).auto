@@ -11,22 +11,9 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "GET OUT (of the starting area)"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Spit Out the Coral"
-                }
-              }
-            ]
+            "pathName": "GET OUT (of the starting area)"
           }
         }
       ]
