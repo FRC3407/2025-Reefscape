@@ -58,10 +58,6 @@ public class RobotContainer {
      */
     public RobotContainer() {
 
-        // autoChooser = AutoBuilder.buildAutoChooser();
-        autoChooser = getAutoChooser();
-
-        SmartDashboard.putData("Auto Chooser", autoChooser);
         // Configure the button bindings
         configureButtonBindings();
 
@@ -92,6 +88,7 @@ public class RobotContainer {
                                 true),
                         m_robotDrive));
         // build an autochooser. Uses Commands.none() as default option
+        autoChooser = getAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
