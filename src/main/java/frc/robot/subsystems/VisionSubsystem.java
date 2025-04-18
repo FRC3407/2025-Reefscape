@@ -14,14 +14,21 @@ import java.util.Optional;
 import javax.naming.spi.DirStateFactory.Result;
 
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.networktables.IntegerArraySubscriber;
 import edu.wpi.first.networktables.IntegerArrayTopic;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class VisionSubsystem extends SubsystemBase {
@@ -33,7 +40,11 @@ public class VisionSubsystem extends SubsystemBase {
   public List<PhotonPipelineResult> lastResults;
   public float timeSinceLastResults=0;
 
+  public Transform3d lastTransformStash=new Transform3d();
+
   private PhotonCamera camera;
+
+  public static AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
 
   // public NetworkTable table;
   /** Creates a new VisionSubsystem. */
@@ -48,6 +59,7 @@ public class VisionSubsystem extends SubsystemBase {
     // System.out.println("i see");
     // This method will be called once per scheduler run
     var result = camera.getLatestResult();
+    // System.out.println(result);
     if (result.hasTargets()) {
       // System.out.println("OH MY GOD ITS AN APRILTAG!");
       // System.out.println(result.getTargets());
@@ -55,6 +67,8 @@ public class VisionSubsystem extends SubsystemBase {
 
     }
     timeSinceLastResults+=1.0/50.0;
+
+    SmartDashboard.putString("vision transform", lastTransformStash.toString());
 
   }
 
@@ -66,7 +80,7 @@ public class VisionSubsystem extends SubsystemBase {
     return DriverStation.getAlliance().get() == Alliance.Red ? redCoralStationTags : blueCoralStationTags;
   }
 
-  public PhotonTrackedTarget getBestReefTarget() {
+  public PhotonTrackedTarget getATarget() {
     List<PhotonPipelineResult> results = camera.getAllUnreadResults();
 
     if (results.size() > 0) {
@@ -79,17 +93,56 @@ public class VisionSubsystem extends SubsystemBase {
       else
         return null;
     }
+    if (results.size() == 0) { // Skip if no results
+      if (timeSinceLastResults<=1.0/5.0) // Use last results if they were recent enough (1/9th of a second)
+        results=lastResults;
+      else
+        {System.out.println("no results");return null;}
+    }
+    // System.out.println("results:" + results);
     PhotonPipelineResult result = results.get(0);
     if (!result.hasTargets()) {
+      System.out.println("no targets");
       return null;
     }
     
     for (PhotonTrackedTarget target : result.getTargets()) {
+      System.out.println("checking id "+target.getFiducialId());
       if (getReefTags().indexOf(target.getFiducialId()) != -1) {
         return target;
       }
     }
+    System.out.println("no targets are reef");
+    return null;
+  }
 
+  public PhotonTrackedTarget getBestReefTarget() {
+    List<PhotonPipelineResult> results = camera.getAllUnreadResults();
+
+    if (results.size() > 0) {
+      lastResults=results;
+      timeSinceLastResults=0;
+    }
+    if (results.size() == 0) { // Skip if no results
+      if (timeSinceLastResults<=1.0/2.0) // Use last results if they were recent enough (1/2 of a second)
+        results=lastResults;
+      else
+        {System.out.println("no results");return null;}
+    }
+    // System.out.println("results:" + results);
+    PhotonPipelineResult result = results.get(0);
+    if (!result.hasTargets()) {
+      System.out.println("no targets");
+      return null;
+    }
+    
+    for (PhotonTrackedTarget target : result.getTargets()) {
+      System.out.println("checking id "+target.getFiducialId());
+      if (getReefTags().indexOf(target.getFiducialId()) != -1) {
+        return target;
+      }
+    }
+    System.out.println("no targets are reef");
     return null;
   }
 
@@ -117,6 +170,18 @@ public class VisionSubsystem extends SubsystemBase {
         return true;
     }
     return false;
+  }
+
+  public Pose3d estimateFieldPose() {
+    PhotonTrackedTarget target = getATarget();
+    if (target == null) return null;
+    Transform3d camToTarget = target.getBestCameraToTarget();
+    Pose3d pose = PhotonUtils.estimateFieldToRobotAprilTag(
+      camToTarget,
+      fieldLayout.getTagPose(target.fiducialId).get(),
+      new Transform3d() // TODO: find the camera to robot transform (or maybe other way around) 
+    );
+    return pose;
   }
 
 }
