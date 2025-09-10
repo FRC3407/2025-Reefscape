@@ -15,6 +15,7 @@ import frc.robot.commands.CoralFeederCommand;
 import frc.robot.commands.GoToReefCommand;
 import frc.robot.commands.DriveDistanceCommand;
 import frc.robot.commands.GoToReefCommand;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.CoralElevator;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.LightsSubsystem;
@@ -45,6 +46,7 @@ public class RobotContainer {
     private final CorallatorSubsystem m_corallator = new CorallatorSubsystem();
     private final VisionSubsystem m_vision = new VisionSubsystem();
     private final LightsSubsystem m_lightsSubsystem = new LightsSubsystem(m_corallator, m_vision);
+    private final ClimberSubsystem m_ClimberSubsystem = new ClimberSubsystem();
 
     // The driver's controller
     CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
