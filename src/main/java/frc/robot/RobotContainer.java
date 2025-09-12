@@ -25,9 +25,12 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.CorallatorSubsystem;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathPlannerPath;
+
+import frc.robot.subsystems.ClimberSubsystem;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -41,6 +44,7 @@ public class RobotContainer {
 	private final CoralElevator m_elevatorShift = new CoralElevator();
 	private final CorallatorSubsystem m_corallator = new CorallatorSubsystem();
 	private final VisionSubsystem m_vision = new VisionSubsystem();
+	private final ClimberSubsystem m_climber = new ClimberSubsystem();
 
 	// The driver's controller
 	CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
@@ -130,6 +134,8 @@ public class RobotContainer {
 		m_driverController.rightStick().onTrue(new InstantCommand(m_elevatorShift::D_stop));
 
 		m_driverController.leftStick().onTrue(new WristResetCommand(m_corallator));
+		m_driverController.leftBumper().whileTrue(new GoToReefCommand(m_vision, m_robotDrive));
+		m_driverController.leftBumper().whileTrue(new GoToReefCommand(m_vision, m_robotDrive));
 		m_driverController.leftBumper().whileTrue(new GoToReefCommand(m_vision, m_robotDrive));
 	}
 
