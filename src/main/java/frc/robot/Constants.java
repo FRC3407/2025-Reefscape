@@ -118,4 +118,7 @@ public final class Constants {
   public static final class CorallatorConstants {
     public static final double corallatorOverheatTemp = 60;
   }
+  public static final class ClimberConstants {
+    public static final int climberCanId = 11;
+  }
 }
