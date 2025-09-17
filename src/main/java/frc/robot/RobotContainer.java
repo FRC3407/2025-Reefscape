@@ -15,6 +15,7 @@ import frc.robot.commands.CoralFeederCommand;
 import frc.robot.commands.GoToReefCommand;
 import frc.robot.commands.DriveDistanceCommand;
 import frc.robot.commands.GoToReefCommand;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.CoralElevator;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.LightsSubsystem;
@@ -45,6 +46,7 @@ public class RobotContainer {
     private final CorallatorSubsystem m_corallator = new CorallatorSubsystem();
     private final VisionSubsystem m_vision = new VisionSubsystem();
     private final LightsSubsystem m_lightsSubsystem = new LightsSubsystem(m_corallator, m_vision);
+	private final ClimberSubsystem m_climber = new ClimberSubsystem();
 
     // The driver's controller
     CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
@@ -159,9 +161,10 @@ public class RobotContainer {
 
         m_driverController.rightStick().onTrue(new InstantCommand(m_elevatorShift::D_stop));
 
-        m_driverController.leftBumper().whileTrue(
-                new GoToReefCommand(m_vision, m_robotDrive).andThen(new DriveDistanceCommand(m_vision, m_robotDrive)));
-
+		m_driverController.leftStick().onTrue(new WristResetCommand(m_corallator));
+		m_driverController.leftBumper().whileTrue(new GoToReefCommand(m_vision, m_robotDrive));
+		m_driverController.axisGreaterThan(3,-0.5).whileTrue(new InstantCommand(m_climber::climberForward));
+		m_driverController.axisLessThan(3,0.5).whileTrue(new InstantCommand(m_climber::climberBackward));
     }
 
     /**
