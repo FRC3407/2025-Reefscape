@@ -10,6 +10,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import static frc.robot.Constants.ClimberConstants.*;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ClimberSubsystem extends SubsystemBase {
@@ -28,6 +29,9 @@ public class ClimberSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    SmartDashboard.putNumber("Climber rotation:", m_encoder.getPosition());
+    SmartDashboard.putNumber("Climber stage:", stage);
+    SmartDashboard.putBoolean("Climber moving:", moving);
     if (moving){
       double targetDifference = m_encoder.getPosition()-targetPoint;
       m_climber.set(Math.signum(targetDifference)*climberSpeed);
@@ -48,16 +52,30 @@ public class ClimberSubsystem extends SubsystemBase {
     direction = (int)Math.signum(m_encoder.getPosition()-targetPoint);
   }
 
-  public void advanceClimber(){
-    stage++;
-    
+  public void advanceClimber(int count){
+    stage+=count;
+    if (stage < 0) stage = 2;
+    if (stage > 2) stage = 0;
+    setClimber();
   }
 
-  public void reverseClimber(){
-    stage--;
+  public void climberForward(){
+    advanceClimber(1);
+  }
+
+  public void climberBackward(){
+    advanceClimber(-1);
   }
 
   public void setClimber(){
-    
+    if (stage == 0){
+      setPosition(climberRestPosition);
+    }
+    if (stage == 1){
+      setPosition(climberHookPosition);
+    }
+    if (stage == 2){
+      setPosition(climberClimbedPosition);
+    }
   }
 }
