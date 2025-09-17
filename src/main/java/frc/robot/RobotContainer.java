@@ -135,8 +135,8 @@ public class RobotContainer {
 
 		m_driverController.leftStick().onTrue(new WristResetCommand(m_corallator));
 		m_driverController.leftBumper().whileTrue(new GoToReefCommand(m_vision, m_robotDrive));
-		m_driverController.axisGreaterThan(3,-0.5).whileTrue(new InstantCommand(m_climber::climberForward));
-		m_driverController.axisLessThan(3,0.5).whileTrue(new InstantCommand(m_climber::climberBackward));
+		m_driverController.axisLessThan(5,-0.5).whileTrue(new InstantCommand(m_climber::climberForward));
+		m_driverController.axisGreaterThan(5,0.5).whileTrue(new InstantCommand(m_climber::climberBackward));
 	}
 
 	/**

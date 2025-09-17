@@ -54,8 +54,8 @@ public class ClimberSubsystem extends SubsystemBase {
 
   public void advanceClimber(int count){
     stage+=count;
-    if (stage < 0) stage = 2;
-    if (stage > 2) stage = 0;
+    // if (stage < 0) stage = 2;
+    // if (stage > 2) stage = 0; //no need to loop over
     setClimber();
   }
 
@@ -64,7 +64,7 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   public void climberBackward(){
-    advanceClimber(-1);
+    // advanceClimber(-1); //DONT go backwards!!!!!
   }
 
   public void setClimber(){
