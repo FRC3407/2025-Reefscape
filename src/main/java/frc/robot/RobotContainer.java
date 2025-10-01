@@ -39,7 +39,7 @@ import frc.robot.subsystems.ClimberSubsystem;
  * (including subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-	// The robot's subsystems
+	// The robot's subsystems.
 	private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 	private final CoralElevator m_elevatorShift = new CoralElevator();
 	private final CorallatorSubsystem m_corallator = new CorallatorSubsystem();
