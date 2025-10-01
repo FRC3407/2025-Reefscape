@@ -45,6 +45,7 @@ public final class Configs {
                 static {
                         m_climberConfig
                                 .smartCurrentLimit(80);
+                                .smartCurrentLimit(60);
                 }
         }
 
