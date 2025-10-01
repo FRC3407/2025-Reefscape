@@ -40,6 +40,14 @@ public final class Configs {
                 }
         }
 
+        public static final class ClimberConfig {
+                public static final SparkMaxConfig m_climberConfig = new SparkMaxConfig();
+                static {
+                        m_climberConfig
+                                .smartCurrentLimit(60);
+                }
+        }
+
         public static final class MAXSwerveModule {
                 public static final SparkMaxConfig drivingConfig = new SparkMaxConfig();
                 public static final SparkMaxConfig turningConfig = new SparkMaxConfig();
