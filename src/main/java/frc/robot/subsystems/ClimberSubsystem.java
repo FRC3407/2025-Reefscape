@@ -4,19 +4,14 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.Timer;
-
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+
 import static frc.robot.Constants.ClimberConstants.*;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import frc.robot.Configs;
 
 public class ClimberSubsystem extends SubsystemBase {
 
@@ -27,13 +22,9 @@ public class ClimberSubsystem extends SubsystemBase {
   private boolean moving;
   private int direction;
   private int stage;
-  private final Timer climbTimer = new Timer();
   /** Creates a new ClimberSubsystem. */
   public ClimberSubsystem() {
     m_encoder.setPosition(0);
-    m_climber.configure(Configs.ClimberConfig.m_climberConfig,ResetMode.kResetSafeParameters,
-				PersistMode.kPersistParameters);
-    climbTimer.reset(); 
   }
 
   @Override
@@ -41,18 +32,11 @@ public class ClimberSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Climber rotation:", m_encoder.getPosition());
     SmartDashboard.putNumber("Climber stage:", stage);
     SmartDashboard.putBoolean("Climber moving:", moving);
-    if (climbTimer.hasElapsed(5)){
-      if (moving){
-        System.out.println("I took too long");
-      }
-      moving = false;
-    }
     if (moving){
       double targetDifference = m_encoder.getPosition()-targetPoint;
       m_climber.set(Math.signum(targetDifference)*climberSpeed);
       if (Math.signum(m_encoder.getPosition()-targetPoint) != direction){
         moving = false;
-        System.out.println("I made it to the next point");
       }
     }
     else{
@@ -66,8 +50,6 @@ public class ClimberSubsystem extends SubsystemBase {
     targetPoint = target;
     moving = true;
     direction = (int)Math.signum(m_encoder.getPosition()-targetPoint);
-    climbTimer.reset(); 
-    climbTimer.start();
   }
 
   public void advanceClimber(int count){
