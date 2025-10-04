@@ -43,7 +43,7 @@ public class ClimberSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("Climber moving:", moving);
     if (climbTimer.hasElapsed(5)){
       if (moving){
-        System.out.println("I took too long");
+        System.out.println("The climber took too long");
       }
       moving = false;
     }
@@ -52,7 +52,7 @@ public class ClimberSubsystem extends SubsystemBase {
       m_climber.set(Math.signum(targetDifference)*climberSpeed);
       if (Math.signum(m_encoder.getPosition()-targetPoint) != direction){
         moving = false;
-        System.out.println("I made it to the next point");
+        System.out.println("The climber made it to the next point");
       }
     }
     else{
@@ -95,5 +95,12 @@ public class ClimberSubsystem extends SubsystemBase {
     if (stage == 2){
       setPosition(climberClimbedPosition);
     }
+  }
+  public void ResetClimber(){
+    m_encoder.setPosition(0);
+    m_climber.configure(Configs.ClimberConfig.m_climberConfig,ResetMode.kResetSafeParameters,
+				PersistMode.kPersistParameters);
+    climbTimer.reset(); 
+    System.out.println("The climber was reset! make sure it's in the starting position.");
   }
 }
