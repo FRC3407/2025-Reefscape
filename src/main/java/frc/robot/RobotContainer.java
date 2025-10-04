@@ -167,7 +167,8 @@ public class RobotContainer {
         Trigger climberTrigger = m_driverController.rightBumper();
         climberTrigger.and(m_driverController.axisLessThan(5,-0.5)).onTrue(new InstantCommand(m_climber::climberForward));
         climberTrigger.and(m_driverController.axisGreaterThan(5,0.5)).whileTrue(new InstantCommand(m_climber::climberBackward));
-    	}
+    	r_attack3.button(8).and(r_attack3.button(9)).and(l_attack3.button(8)).and(r_attack3.button(9)).onTrue(new InstantCommand(m_climber::ResetClimber));
+        }
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.

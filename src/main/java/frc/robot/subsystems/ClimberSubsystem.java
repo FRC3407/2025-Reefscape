@@ -96,4 +96,10 @@ public class ClimberSubsystem extends SubsystemBase {
       setPosition(climberClimbedPosition);
     }
   }
+  public void ResetClimber(){
+    m_encoder.setPosition(0);
+    m_climber.configure(Configs.ClimberConfig.m_climberConfig,ResetMode.kResetSafeParameters,
+				PersistMode.kPersistParameters);
+    climbTimer.reset(); 
+  }
 }
