@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Go to Reef R"
+            "pathName": "Before vision go kinda to the reef (top)"
           }
         },
         {
@@ -19,7 +19,7 @@
       ]
     }
   },
-  "resetOdom": true,
+  "resetOdom": false,
   "folder": null,
   "choreoAuto": false
 }
