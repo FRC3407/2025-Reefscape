@@ -163,10 +163,10 @@ public class RobotContainer {
         m_driverController.rightStick().onTrue(new InstantCommand(m_elevatorShift::D_stop));
 
         m_driverController.leftBumper().whileTrue(
-                new GoToReefCommand(m_vision, m_robotDrive).andThen(new DriveDistanceCommand(m_vision, m_robotDrive)));
-		Trigger climberTrigger = m_driverController.rightBumper();
-		climberTrigger.and(m_driverController.axisLessThan(5,-0.5)).onTrue(new InstantCommand(m_climber::climberForward));
-		climberTrigger.and(m_driverController.axisGreaterThan(5,0.5)).whileTrue(new InstantCommand(m_climber::climberBackward));
+        new GoToReefCommand(m_vision, m_robotDrive).andThen(new DriveDistanceCommand(m_vision, m_robotDrive)));
+        Trigger climberTrigger = m_driverController.rightBumper();
+        climberTrigger.and(m_driverController.axisLessThan(5,-0.5)).onTrue(new InstantCommand(m_climber::climberForward));
+        climberTrigger.and(m_driverController.axisGreaterThan(5,0.5)).whileTrue(new InstantCommand(m_climber::climberBackward));
     	}
 
     /**
