@@ -15,6 +15,7 @@ import frc.robot.commands.CoralFeederCommand;
 import frc.robot.commands.GoToReefCommand;
 import frc.robot.commands.DriveDistanceCommand;
 import frc.robot.commands.GoToReefCommand;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.CoralElevator;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.LightsSubsystem;
@@ -27,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.CorallatorSubsystem;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -45,6 +47,7 @@ public class RobotContainer {
     private final CorallatorSubsystem m_corallator = new CorallatorSubsystem();
     private final VisionSubsystem m_vision = new VisionSubsystem();
     private final LightsSubsystem m_lightsSubsystem = new LightsSubsystem(m_corallator, m_vision);
+	private final ClimberSubsystem m_climber = new ClimberSubsystem();
 
     // The driver's controller
     CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
@@ -160,9 +163,11 @@ public class RobotContainer {
         m_driverController.rightStick().onTrue(new InstantCommand(m_elevatorShift::D_stop));
 
         m_driverController.leftBumper().whileTrue(
-                new GoToReefCommand(m_vision, m_robotDrive).andThen(new DriveDistanceCommand(m_vision, m_robotDrive)));
-
-    }
+        new GoToReefCommand(m_vision, m_robotDrive).andThen(new DriveDistanceCommand(m_vision, m_robotDrive)));
+        Trigger climberTrigger = m_driverController.rightBumper();
+        climberTrigger.and(m_driverController.axisLessThan(5,-0.5)).onTrue(new InstantCommand(m_climber::climberForward));
+        climberTrigger.and(m_driverController.axisGreaterThan(5,0.5)).whileTrue(new InstantCommand(m_climber::climberBackward));
+    	}
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
