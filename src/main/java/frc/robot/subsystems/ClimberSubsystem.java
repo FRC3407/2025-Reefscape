@@ -101,5 +101,6 @@ public class ClimberSubsystem extends SubsystemBase {
     m_climber.configure(Configs.ClimberConfig.m_climberConfig,ResetMode.kResetSafeParameters,
 				PersistMode.kPersistParameters);
     climbTimer.reset(); 
+    System.out.println("The climber was reset! make sure it's in the starting position.");
   }
 }
