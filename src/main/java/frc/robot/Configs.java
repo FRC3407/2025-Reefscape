@@ -44,8 +44,8 @@ public final class Configs {
                 public static final SparkMaxConfig m_climberConfig = new SparkMaxConfig();
                 static {
                         m_climberConfig
-                                .smartCurrentLimit(80);
-                                .smartCurrentLimit(60);
+                                .smartCurrentLimit(100)
+                                .secondaryCurrentLimit(0);
                 }
         }
 
