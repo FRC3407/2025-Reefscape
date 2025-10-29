@@ -41,7 +41,7 @@ public class ClimberSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Climber rotation:", m_encoder.getPosition());
     SmartDashboard.putNumber("Climber stage:", stage);
     SmartDashboard.putBoolean("Climber moving:", moving);
-    if (climbTimer.hasElapsed(5)){
+    if (climbTimer.hasElapsed(3)){
       if (moving){
         System.out.println("The climber took too long");
       }
@@ -97,6 +97,7 @@ public class ClimberSubsystem extends SubsystemBase {
     }
   }
   public void ResetClimber(){
+    stage = 0;
     m_encoder.setPosition(0);
     m_climber.configure(Configs.ClimberConfig.m_climberConfig,ResetMode.kResetSafeParameters,
 				PersistMode.kPersistParameters);
