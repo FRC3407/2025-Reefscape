@@ -41,7 +41,7 @@ public class CoralElevator extends SubsystemBase {
 
 	private void set_position(double height) {
 		set_point = height;
-
+		m_control.reset();
 	}
 
 	public void stop() {
