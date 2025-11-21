@@ -41,7 +41,7 @@ public class ClimberSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Climber rotation:", m_encoder.getPosition());
     SmartDashboard.putNumber("Climber stage:", stage);
     SmartDashboard.putBoolean("Climber moving:", moving);
-    if (climbTimer.hasElapsed(3)){
+    if (climbTimer.hasElapsed(climberTimeoutSeconds )){
       if (moving){
         System.out.println("The climber took too long");
       }

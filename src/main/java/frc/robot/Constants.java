@@ -124,5 +124,6 @@ public final class Constants {
     public static final double climberRestPosition = 0;
     public static final double climberHookPosition = -65; //ready to grab
     public static final double climberClimbedPosition = -245; //climbed
+    public static final double climberTimeoutSeconds = 4;
   }
 }
