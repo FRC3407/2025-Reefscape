@@ -53,7 +53,8 @@ public class GoToReefCommand extends Command {
   }
 
   protected PhotonTrackedTarget getBestTarget() {
-    return visionSubsystem.getBestReefTarget();
+    // return visionSubsystem.getBestReefTarget();
+    return null; //TODO: fix
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -97,7 +98,7 @@ public class GoToReefCommand extends Command {
         false
       );
       lastTargetTransform = camToTarget;
-      visionSubsystem.lastTransformStash = lastTargetTransform;
+      // visionSubsystem.lastTransformStash = lastTargetTransform;
       useLastTransform = true;
       // AprilTagFieldLayout.loadFromResource("")
       // lastPose = PhotonUtils.estimateFieldToRobotAprilTag(

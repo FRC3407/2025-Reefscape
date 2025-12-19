@@ -15,9 +15,12 @@ public class GoToStationCommand extends GoToReefCommand {
     super(visionSubsystem, driveSubsystem);
   }
 
+  
+
   @Override
   protected PhotonTrackedTarget getBestTarget() {
-    return visionSubsystem.getBestCoralStationTarget();
+    // return visionSubsystem.getBestCoralStationTarget();
+    return null; //TODO: fix
   }
 
 }

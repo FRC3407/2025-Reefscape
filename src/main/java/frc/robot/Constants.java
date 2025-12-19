@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -117,5 +118,9 @@ public final class Constants {
   }
   public static final class CorallatorConstants {
     public static final double corallatorOverheatTemp = 60;
+  }
+  public static final class VisionConstants {
+    public static final AprilTagFields kFieldLayout = AprilTagFields.k2025ReefscapeWelded;
+    public static final double kMaxAmbiguity = 0.10;
   }
 }

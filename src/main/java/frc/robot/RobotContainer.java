@@ -5,6 +5,9 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -14,6 +17,7 @@ import frc.robot.commands.CoralEjectCommand;
 import frc.robot.commands.CoralFeederCommand;
 import frc.robot.commands.GoToReefCommand;
 import frc.robot.commands.DriveDistanceCommand;
+import frc.robot.commands.GoToPoseCommand;
 import frc.robot.commands.GoToReefCommand;
 import frc.robot.subsystems.CoralElevator;
 import frc.robot.subsystems.DriveSubsystem;
@@ -43,7 +47,7 @@ public class RobotContainer {
     private final DriveSubsystem m_robotDrive = new DriveSubsystem();
     private final CoralElevator m_elevatorShift = new CoralElevator();
     private final CorallatorSubsystem m_corallator = new CorallatorSubsystem();
-    private final VisionSubsystem m_vision = new VisionSubsystem();
+    private final VisionSubsystem m_vision = new VisionSubsystem(m_robotDrive);
     private final LightsSubsystem m_lightsSubsystem = new LightsSubsystem(m_corallator, m_vision);
 
     // The driver's controller
@@ -52,6 +56,11 @@ public class RobotContainer {
     CommandJoystick r_attack3 = new CommandJoystick(1);
     // pathplanner sendable chooser for auto widget i think
     private final SendableChooser<Command> autoChooser;
+
+
+
+    Pose2d target_pose = new Pose2d(new Translation2d(0,0), new Rotation2d(3.1415));
+
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -159,8 +168,16 @@ public class RobotContainer {
 
         m_driverController.rightStick().onTrue(new InstantCommand(m_elevatorShift::D_stop));
 
-        m_driverController.leftBumper().whileTrue(
-                new GoToReefCommand(m_vision, m_robotDrive).andThen(new DriveDistanceCommand(m_vision, m_robotDrive)));
+        GoToPoseCommand cmd = new GoToPoseCommand(target_pose, m_robotDrive);
+        m_driverController.leftBumper().whileTrue(cmd);
+
+        r_attack3.button(11).onTrue(new InstantCommand(() -> {
+            cmd.targetPose = m_robotDrive.getPose();
+            System.out.println("set pose to "+cmd.targetPose);
+            cmd.xPID.reset();
+            cmd.yPID.reset();
+            cmd.rPID.reset();
+        }));
 
     }
 

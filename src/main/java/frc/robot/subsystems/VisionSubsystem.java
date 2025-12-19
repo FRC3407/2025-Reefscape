@@ -1,187 +1,228 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
-import java.io.Serial;
-import java.lang.annotation.Target;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-import javax.naming.spi.DirStateFactory.Result;
-
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonUtils;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.networktables.IntegerArraySubscriber;
-import edu.wpi.first.networktables.IntegerArrayTopic;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.VisionConstants;
 
 public class VisionSubsystem extends SubsystemBase {
-  public static List<Integer> redReefTags = Arrays.asList(6, 7, 8, 9, 10, 11);
-  public static List<Integer> redCoralStationTags = Arrays.asList(12, 13);
-  public static List<Integer> blueReefTags = Arrays.asList(17, 18, 19, 20, 21, 22);
-  public static List<Integer> blueCoralStationTags = Arrays.asList(1, 2);
 
-  public List<PhotonPipelineResult> lastResults;
-  public float timeSinceLastResults=0;
+    private boolean isTargetVisible = false;
+    private final DriveSubsystem driveSubsystem;
+    public final NetworkTableEntry apriltagsVisibleDisplay = SmartDashboard.getEntry("VisionSubsystem/AprilTagsVisible");
+    public final NetworkTableEntry periodicTimeDisplay = SmartDashboard.getEntry("VisionSubsystem/periodicTime");
+    public final List<VisionCamera> cameraList = new ArrayList<>();
+    protected final AprilTagFieldLayout tagLayout;
 
-  public Transform3d lastTransformStash=new Transform3d();
-
-  private PhotonCamera camera;
-
-  public static AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
-
-  // public NetworkTable table;
-  /** Creates a new VisionSubsystem. */
-  public VisionSubsystem() {
-    System.out.println("hello im vision");
-    camera = new PhotonCamera("Arducam_OV9281_USB_Camera");
-
-  }
-
-  @Override
-  public void periodic() {
-    // System.out.println("i see");
-    // This method will be called once per scheduler run
-    var result = camera.getLatestResult();
-    // System.out.println(result);
-    if (result.hasTargets()) {
-      // System.out.println("OH MY GOD ITS AN APRILTAG!");
-      // System.out.println(result.getTargets());
-      PhotonTrackedTarget target = result.getBestTarget();
-
+    public VisionSubsystem(DriveSubsystem driveSubsystem) {
+        this.driveSubsystem = driveSubsystem;
+        this.tagLayout = AprilTagFieldLayout.loadField(VisionConstants.kFieldLayout);
+        cameraList.add(new VisionCamera("Arducam_OV9281_USB_Camera", new Transform3d(
+                new Translation3d(
+                        Units.inchesToMeters(0.0), // left or right from center
+                        Units.inchesToMeters(8.0), // forward from robot center
+                        Units.inchesToMeters(12.0)), // distance up from the floor
+                new Rotation3d(
+                        Rotation2d.fromDegrees(0).getRadians(), // roll
+                        Rotation2d.fromDegrees(0.0).getRadians(), // pitch
+                        Rotation2d.fromDegrees(0).getRadians())))); // yaw
     }
-    timeSinceLastResults+=1.0/50.0;
 
-    SmartDashboard.putString("vision transform", lastTransformStash.toString());
+    @Override
+    public void periodic() {
+        final double time = Timer.getFPGATimestamp();
+        isTargetVisible = false;
+        for (VisionCamera visionCamera : cameraList) {
+            EstimatedRobotPose poseEstimate = visionCamera.getEstimatedRobotPose();
+            if (poseEstimate != null) {
+                isTargetVisible = true;
+                if (poseEstimate.timestampSeconds != visionCamera.prevTimestamp) {
+                    driveSubsystem.addVisionMeasurement(
+                            poseEstimate.estimatedPose.toPose2d(),
+                            poseEstimate.timestampSeconds);
+                }
+                visionCamera.prevTimestamp = poseEstimate.timestampSeconds;
+            }
+        }
+        apriltagsVisibleDisplay.setBoolean(isTargetVisible);
+        periodicTimeDisplay.setInteger(Math.round(1000*(Timer.getFPGATimestamp()-time)));
+    }
 
-  }
+    /**
+     * @return whether any AprilTag is visible.
+     */
+    public boolean cameraSeesTargets() {
+        return isTargetVisible;
+    }
 
-  private List<Integer> getReefTags() {
-    return DriverStation.getAlliance().get() == Alliance.Red ? redReefTags : blueReefTags;
-  }
+    /**
+     * Find the best {@code AprilTag} currently visible for a given list of IDs.
+     * If no fiducial IDs are specified, then return any possible tag.
+     *
+     * @param fiducialIDs optional list of tag IDs.
+     * @return the best visible {@code AprilTag} for any of the fiducialIDs.
+     */
+    public AprilTag getBestTag(Integer... fiducialIDs) {
+        AprilTag aprilTag = null;
+        for (VisionCamera visionCamera : cameraList) {
+            aprilTag = visionCamera.getBestTag(fiducialIDs);
+            if (aprilTag != null) { break; }
+        }
+        return aprilTag;
+    }
 
-  private List<Integer> getCoralStationTags() {
-    return DriverStation.getAlliance().get() == Alliance.Red ? redCoralStationTags : blueCoralStationTags;
-  }
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    public class VisionCamera {
 
-  public PhotonTrackedTarget getATarget() {
-    List<PhotonPipelineResult> results = camera.getAllUnreadResults();
+        final PhotonCamera camera;
+        final Transform3d cameraTransform;
+        final PhotonPoseEstimator poseEstimator;
+        double prevTimestamp;
 
-    if (results.size() > 0) {
-      lastResults=results;
-      timeSinceLastResults=0;
-    }
-    if (results.size() == 0) { // Skip if no results
-      if (timeSinceLastResults<=1.0/9.0) // Use last results if they were recent enough (1/9th of a second)
-        results=lastResults;
-      else
-        return null;
-    }
-    if (results.size() == 0) { // Skip if no results
-      if (timeSinceLastResults<=1.0/5.0) // Use last results if they were recent enough (1/9th of a second)
-        results=lastResults;
-      else
-        {System.out.println("no results");return null;}
-    }
-    // System.out.println("results:" + results);
-    PhotonPipelineResult result = results.get(0);
-    if (!result.hasTargets()) {
-      System.out.println("no targets");
-      return null;
-    }
-    
-    for (PhotonTrackedTarget target : result.getTargets()) {
-      System.out.println("checking id "+target.getFiducialId());
-      if (getReefTags().indexOf(target.getFiducialId()) != -1) {
-        return target;
-      }
-    }
-    System.out.println("no targets are reef");
-    return null;
-  }
+        public VisionCamera(String cameraName, Transform3d cameraTransform) {
+            this(new PhotonCamera(cameraName),
+                    cameraTransform,
+                    new PhotonPoseEstimator(tagLayout,
+                    PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+                            cameraTransform));
+            this.poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        }
 
-  public PhotonTrackedTarget getBestReefTarget() {
-    List<PhotonPipelineResult> results = camera.getAllUnreadResults();
+        VisionCamera(PhotonCamera camera, Transform3d cameraTransform, PhotonPoseEstimator poseEstimator) {
+            this.camera = camera;
+            this.cameraTransform = cameraTransform;
+            this.poseEstimator = poseEstimator;
+        }
 
-    if (results.size() > 0) {
-      lastResults=results;
-      timeSinceLastResults=0;
-    }
-    if (results.size() == 0) { // Skip if no results
-      if (timeSinceLastResults<=1.0/2.0) // Use last results if they were recent enough (1/2 of a second)
-        results=lastResults;
-      else
-        {System.out.println("no results");return null;}
-    }
-    // System.out.println("results:" + results);
-    PhotonPipelineResult result = results.get(0);
-    if (!result.hasTargets()) {
-      System.out.println("no targets");
-      return null;
-    }
-    
-    for (PhotonTrackedTarget target : result.getTargets()) {
-      System.out.println("checking id "+target.getFiducialId());
-      if (getReefTags().indexOf(target.getFiducialId()) != -1) {
-        return target;
-      }
-    }
-    System.out.println("no targets are reef");
-    return null;
-  }
+        /**
+         * @return the estimated field-centric pose of the robot, or
+         * {@code null}.
+         */
+        EstimatedRobotPose getEstimatedRobotPose() {
+            Optional<EstimatedRobotPose> visionEst = Optional.empty();
+            for (PhotonPipelineResult pipelineResult : camera.getAllUnreadResults()) {
+                List<PhotonTrackedTarget> targetList = makeGoodTargetList(pipelineResult, null);
+                if (!targetList.isEmpty()) {
+                    visionEst = poseEstimator.update(pipelineResult);
+                }
+            }
+            return visionEst.orElse(null);
 
-  public PhotonTrackedTarget getBestCoralStationTarget() {
-    List<PhotonPipelineResult> results = camera.getAllUnreadResults();
-    if (results.size() == 0) { // Skip if no results
-      return null;
-    }
-    PhotonPipelineResult result = results.get(0);
-    if (!result.hasTargets()) {
-      return null;
-    }
-    for (PhotonTrackedTarget target : result.getTargets()) {
-      if (getCoralStationTags().indexOf(target.getFiducialId()) != -1) {
-        return target;
-      }
-    }
-    return null;
-  }
+        }
 
-  public boolean cameraSeesTargets() {
-    List<PhotonPipelineResult> results = camera.getAllUnreadResults();
-    for (PhotonPipelineResult res : results) {
-      if (res.hasTargets())
-        return true;
+        /**
+         * @return True if the camera is actively sending frame data, false
+         * otherwise.
+         */
+        public boolean isConnected() {
+            return camera.isConnected();
+        }
+
+        /**
+         * @return the best visible {@code AprilTag} for any of the fiducialIDs.
+         */
+        public AprilTag getBestTag(Integer... fiducialIDs) {
+            List<PhotonPipelineResult> results = camera.getAllUnreadResults();
+            if (results == null || results.isEmpty()) {
+                return null;
+            }
+            return getBestTag(results.get(0), fiducialIDs);
+        }
+
+        /**
+         * @return the best {@code AprilTag} or {@code null}.
+         */
+        AprilTag getBestTag(PhotonPipelineResult pipelineResult, Integer... fiducialIDs) {
+            if (!pipelineResult.hasTargets()) {
+                return null;
+            }
+            List<PhotonTrackedTarget> targetList = makeGoodTargetList(pipelineResult,
+                    (t1, t2) -> Double.compare(t1.poseAmbiguity, t2.poseAmbiguity));
+            for (PhotonTrackedTarget target : targetList) {
+                if (isFiducialListMatch(target, fiducialIDs)) {
+                    return toAprilTag(pipelineResult, target);
+                }
+            }
+            return null;
+        }
+
+        /**
+         * @return whether the observed target is on a list of IDs. If the ID
+         * list is empty, then match any target.
+         */
+        boolean isFiducialListMatch(PhotonTrackedTarget target, Integer... fiducialIDs) {
+            if (fiducialIDs == null || fiducialIDs.length == 0) {
+                return true;
+            }
+            for (Integer id : fiducialIDs) {
+                if (target.getFiducialId() == id) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /**
+         * Convert a pipeline result and target to an {@code AprilTag} object
+         * with a field-relative {@code Pose3d}.
+         */
+        AprilTag toAprilTag(PhotonPipelineResult result, PhotonTrackedTarget target) {
+            Optional<EstimatedRobotPose> visionEst = poseEstimator.update(result);
+            if (!visionEst.isPresent()) {
+                return null;
+            }
+            return makeAprilTag(target.getFiducialId(), 
+                visionEst.get().estimatedPose, 
+                target.getBestCameraToTarget());
+        }
+
+        AprilTag makeAprilTag(int fiducialId, Pose3d fieldToRobotPose, Transform3d robotToTag) {
+            Pose3d aprilTagPose = fieldToRobotPose.transformBy(robotToTag);
+            return new AprilTag(fiducialId, aprilTagPose);
+        }
+
+        /**
+         * @return whether this target should be excluded from vision
+         * processing.
+         */
+        boolean isBadTarget(PhotonTrackedTarget target) {
+            // TODO: This method might be rewritten to add different quality checks.
+            return target.getPoseAmbiguity() > VisionConstants.kMaxAmbiguity;
+        }
+
+        /**
+         * @return List of all {@code PhotonTrackedTarget} objects that are not "bad".
+         */
+        List<PhotonTrackedTarget> makeGoodTargetList(PhotonPipelineResult pipelineResult,
+                                                              Comparator<PhotonTrackedTarget> targetComparator) {
+            List<PhotonTrackedTarget> targetList = new ArrayList<>(pipelineResult.getTargets());
+            List<PhotonTrackedTarget> badTargets = pipelineResult.getTargets().stream()
+                    .filter(this::isBadTarget).toList();
+            targetList.removeAll(badTargets);
+            if (!targetList.isEmpty() && targetComparator != null) {
+                Collections.sort(targetList, targetComparator);
+            }
+            return targetList;
+        }
     }
-    return false;
-  }
-
-  public Pose3d estimateFieldPose() {
-    PhotonTrackedTarget target = getATarget();
-    if (target == null) return null;
-    Transform3d camToTarget = target.getBestCameraToTarget();
-    Pose3d pose = PhotonUtils.estimateFieldToRobotAprilTag(
-      camToTarget,
-      fieldLayout.getTagPose(target.fiducialId).get(),
-      new Transform3d() // TODO: find the camera to robot transform (or maybe other way around) 
-    );
-    return pose;
-  }
-
 }

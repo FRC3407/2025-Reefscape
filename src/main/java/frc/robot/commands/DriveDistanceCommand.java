@@ -54,8 +54,8 @@ public class DriveDistanceCommand extends Command {
   public void initialize() {
     // m_robotDrive.jvireavo;
     startPose = m_robotDrive.getPose();
-    moveX=m_vision.lastTransformStash.getX();
-    moveY=m_vision.lastTransformStash.getY();
+    // moveX=m_vision.lastTransformStash.getX();
+    // moveY=m_vision.lastTransformStash.getY();
     destinationPose = m_robotDrive.getPose().transformBy(new Transform2d(moveX,moveY,new Rotation2d(0)));
   }
 
