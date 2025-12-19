@@ -19,8 +19,8 @@ public class GoToPoseCommand extends Command {
   public final double positionThreshold = 0.01; // in meters probably
   public final double rotationThreshold = 0.1; // in degrees bc i used getDegrees() for the pid controller
 
-  public PIDController xPID = new PIDController(0.45, 0.02, 0);
-  public PIDController yPID = new PIDController(0.45, 0.02, 0);
+  public PIDController xPID = new PIDController(0.44, 0.02, 0);
+  public PIDController yPID = new PIDController(0.44, 0.02, 0);
   public PIDController rPID = new PIDController(0.005, 0, 0);
 
   /** Creates a new GoToPoseCommand. */
