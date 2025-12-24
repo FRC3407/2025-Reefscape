@@ -16,12 +16,12 @@ public class GoToPoseCommand extends Command {
   public final DriveSubsystem m_robotDrive;
   public Pose2d targetPose = new Pose2d(new Translation2d(0,0), new Rotation2d(0));
   
-  public final double positionThreshold = 0.01; // in meters probably
-  public final double rotationThreshold = 0.1; // in degrees bc i used getDegrees() for the pid controller
-
-  public PIDController xPID = new PIDController(0.44, 0.02, 0);
-  public PIDController yPID = new PIDController(0.44, 0.02, 0);
-  public PIDController rPID = new PIDController(0.005, 0, 0);
+  public final double positionThreshold = 0.0025; // in meters probably
+  public final double rotationThreshold = 0.02; // in degrees bc i used getDegrees() for the pid controller
+  
+  public PIDController xPID = new PIDController(0.6, 0.02, 0.00);
+  public PIDController yPID = new PIDController(0.6, 0.02, 0.00);
+  public PIDController rPID = new PIDController(0.010, 0.002, 0);
 
   /** Creates a new GoToPoseCommand. */
   public GoToPoseCommand(Pose2d target, DriveSubsystem drive) {
@@ -32,7 +32,11 @@ public class GoToPoseCommand extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    xPID.reset();
+    yPID.reset();
+    rPID.reset();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -42,16 +46,19 @@ public class GoToPoseCommand extends Command {
     System.out.println(delta);
     
     m_robotDrive.drive(
-      xPID.calculate(delta.getX()),
-      yPID.calculate(delta.getY()),
-      rPID.calculate(delta.getRotation().getDegrees()),
-      true
+      Math.min(0.4,xPID.calculate(delta.getX())),
+      Math.min(0.4,yPID.calculate(delta.getY())),
+      Math.min(0.4,rPID.calculate(delta.getRotation().getDegrees())),
+      false
     );
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    xPID.reset();
+    yPID.reset();
+    rPID.reset();
     m_robotDrive.drive(0, 0, 0, false);
   }
 
