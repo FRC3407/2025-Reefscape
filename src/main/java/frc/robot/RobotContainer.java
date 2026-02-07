@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -47,7 +48,7 @@ public class RobotContainer {
     private final CorallatorSubsystem m_corallator = new CorallatorSubsystem();
     private final VisionSubsystem m_vision = new VisionSubsystem();
     private final LightsSubsystem m_lightsSubsystem = new LightsSubsystem(m_corallator, m_vision);
-	private final ClimberSubsystem m_climber = new ClimberSubsystem();
+    private final ClimberSubsystem m_climber = new ClimberSubsystem();
 
     // The driver's controller
     CommandXboxController m_driverController = new CommandXboxController(OIConstants.kDriverControllerPort);
@@ -94,6 +95,27 @@ public class RobotContainer {
         autoChooser = getAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
     }
+
+    public void face_hub(Transform3d target) {
+		m_robotDrive.drive(
+                            -MathUtil.applyDeadband(
+                                    l_attack3.getY() * Math
+                                            .abs(l_attack3.getY())
+                                            + m_driverController
+                                                    .getLeftY()
+                                                    * OIConstants.kSecondDriverPower,
+                                    OIConstants.kDriveDeadband),
+                            -MathUtil.applyDeadband(
+                                    l_attack3.getX() * Math
+                                            .abs(l_attack3.getX())
+                                            + m_driverController
+                                                    .getLeftX()
+                                                    * OIConstants.kSecondDriverPower,
+                                    OIConstants.kDriveDeadband),
+                            
+                            true);
+	}
+    
 
     private SendableChooser<Command> getAutoChooser() {
 
@@ -163,12 +185,15 @@ public class RobotContainer {
         m_driverController.rightStick().onTrue(new InstantCommand(m_elevatorShift::D_stop));
 
         m_driverController.leftBumper().whileTrue(
-        new GoToReefCommand(m_vision, m_robotDrive).andThen(new DriveDistanceCommand(m_vision, m_robotDrive)));
+                new GoToReefCommand(m_vision, m_robotDrive).andThen(new DriveDistanceCommand(m_vision, m_robotDrive)));
         Trigger climberTrigger = m_driverController.rightBumper();
-        climberTrigger.and(m_driverController.axisLessThan(5,-0.5)).onTrue(new InstantCommand(m_climber::climberForward));
-        climberTrigger.and(m_driverController.axisGreaterThan(5,0.5)).whileTrue(new InstantCommand(m_climber::climberBackward));
-    	r_attack3.button(8).and(r_attack3.button(9)).and(l_attack3.button(8)).and(r_attack3.button(9)).onTrue(new InstantCommand(m_climber::ResetClimber));
-        }
+        climberTrigger.and(m_driverController.axisLessThan(5, -0.5))
+                .onTrue(new InstantCommand(m_climber::climberForward));
+        climberTrigger.and(m_driverController.axisGreaterThan(5, 0.5))
+                .whileTrue(new InstantCommand(m_climber::climberBackward));
+        r_attack3.button(8).and(r_attack3.button(9)).and(l_attack3.button(8)).and(r_attack3.button(9))
+                .onTrue(new InstantCommand(m_climber::ResetClimber));
+    }
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
